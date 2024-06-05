@@ -1,1 +1,1 @@
-I will be documenting my research on the various USD methods and other learnings as I go through the various features provided in Omniverse.
+We will be documenting our research on text-to-video generation
