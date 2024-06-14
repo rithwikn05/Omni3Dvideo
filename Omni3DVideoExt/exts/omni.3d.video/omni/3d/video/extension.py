@@ -55,7 +55,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
                     transformObj.scale(xformableCube, (75, 75, 75))
                     transformObj.rotate(xformableCube, (0, 1, 0))
 
-                    #sphere
+                    #sph*ere
                     xformableSphere = UsdGeom.Xformable(sphere)
                     xformableSphere.SetXformOpOrder([])
                     transformObj.scale(xformableSphere, (75, 75, 75))
