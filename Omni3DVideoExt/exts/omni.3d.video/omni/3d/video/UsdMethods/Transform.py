@@ -14,6 +14,27 @@ def move_prim(prim_path: str, direction: str, distance: float) -> None:
         distance (float): a float suggestion the distance to move
     """
 
+    stage = omni.usd.get_context().get_stage()
+    prim = stage.GetPrimAtPath(prim_path)
+    translate = prim.GetAttribute("xformOp:translate").Get()
+    print("[Atomic Functions] translate", translate)
+    if direction == "left":
+        translate[0] += distance
+    elif direction == "right":
+        translate[0] -= distance
+    elif direction == "front":
+        translate[1] += distance
+    elif direction == "back":
+        translate[1] -= distance
+    elif direction == "up":
+        translate[2] += distance
+    elif direction == "down":
+        translate[2] -= 1 * distance
+       
+    print("[Atomic Functions] translate", translate)
+    prim.GetAttribute("xformOp:translate").Set(translate)
+
+
 def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     """
     Rotate the prim along an axis by some degree
@@ -24,6 +45,18 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
         degree (float): a float suggestion the euler degree to rotate
     """
 
+    stage = omni.usd.get_context().get_stage()
+    prim = stage.GetPrimAtPath(prim_path)
+    rotation_vector = (0.0, 0.0, 0.0)
+    if axis == 'x':
+        rotation_vector[0] = degree
+    elif axis == 'y':
+        rotation_vector[1] = degree
+    else:
+        rotation_vector[2] = degree
+    prim.GetAttribute("xformOp:rotate").Set(rotation_vector)
+    
+
 def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
     """
     Scale the prim by a ratio
@@ -32,6 +65,11 @@ def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
         prim_path (str): the path of the prim to move
         relative_scale_ratio: a float suggestion the scale ratio
     """
+    
+    stage = omni.usd.get_context().get_stage()
+    prim = stage.GetPrimAtPath(prim_path)
+    scale_val = prim.GetAttribute("xformOp:scale")
+    prim.GetAttribute("xformOp:scale").Set(scale_val*relative_scale_ratio)
 
 def place_prim_on_another(prim_path: str, another_prim_path: str) -> None:
     """

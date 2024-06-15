@@ -18,9 +18,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self._window = ui.Window("Omni3DVideo Debug Window", width=300, height=300)
         with self._window.frame:
             with ui.VStack():
-<<<<<<< HEAD
                 label = ui.Label("")
-
 
                 # def on_click():
                 #     self._count += 1
@@ -78,8 +76,6 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
                 #on_reset()
 
-=======
->>>>>>> origin/main
                 with ui.HStack():
                     ui.Button("debug", height = 40, clicked_fn=self.debug)
 
