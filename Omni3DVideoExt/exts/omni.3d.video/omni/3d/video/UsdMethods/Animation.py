@@ -8,6 +8,8 @@ def keyframe(prim_path: str, attribute: str, time: float, value: float) -> None:
         time (float): the time to keyframe
         value (float): the value to keyframe
     """
+
+    
     
 def create_360_rotation_animation(prim_path: str, duration: float, axis: str = "Y") -> None:
     """
