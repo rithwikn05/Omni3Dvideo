@@ -4,33 +4,33 @@ import omni.usd
 import math
 
 
-def create_camera_look_at(prim_path: str, angle: float = 45, distance: float = 200) -> None:
+def create_camera_look_at(look_at_prim_path: str, angle: float = 45, distance: float = 200) -> None:
     """
     Create a camera at a position and make it look at a point
 
     Args:
-        prim_path (str): the path of the camera
+        prim_path (str): the path of the object to look at
         angle (float): the angle of the camera 
         distance (float): the distance of the camera
     """
     stage = omni.usd.get_context().get_stage()
-    prim = stage.GetPrimAtPath(prim_path)
+    look_at_prim = stage.GetPrimAtPath(look_at_prim_path)
 
     x_dist = distance * math.cos(angle)
     y_dist = distance * math.sin(angle)
-    camera_position = Gf.Vec3f(x_dist, y_dist, 0.0)
+    camera_position = Gf.Vec3d(x_dist, y_dist, 0.0)
 
-    target_position = Gf.Vec3f(0.0, 0.0, 0.0)
+    target_position = Gf.Vec3d(0.0, 0.0, 0.0)
     direction = target_position - camera_position
     direction.Normalize()
 
     transform = Gf.Matrix4d(1.0)
     #Rotating camera to the specified angle
-    transform.SetRotate(Gf.Rotation(Gf.Vec3f(0, 0, -1)), direction)
+    # transform.SetRotate(Gf.Rotation(Gf.Vec3f(0, 0, -1)), direction)
     #Moving camera to the required distance
     transform.SetTranslate(camera_position)
 
-    xformable_obj = UsdGeom.Xformable(prim)
+    xformable_obj = UsdGeom.Xformable(look_at_prim_path)
     xformable_obj.SetXformOpOrder([])  #Reset any past transformations done
     xformable_obj.AddTransformOp().Set(transform)
 

@@ -87,9 +87,18 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
     def debug2(self):
         print("debug2")
-        from .utils import get_extension_path
-        logger.info(get_extension_path())
 
-        from .UsdMethods.Material import generate_texture
-        generate_texture("/World/Cube", "A chubby orange cat riding through space, digital art")
+        # from .utils import get_extension_path
+        # logger.info(get_extension_path())
+
+        # from .UsdMethods.Material import generate_texture
+        # generate_texture("/World/Cube", "A chubby orange cat riding through space, digital art")
+        
+        # from .UsdMethods.Camera import create_camera_look_at
+        # create_camera_look_at("/World/Cube")
+
+        from .UsdMethods.Animation import keyframe
+        
+        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
+        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
         
