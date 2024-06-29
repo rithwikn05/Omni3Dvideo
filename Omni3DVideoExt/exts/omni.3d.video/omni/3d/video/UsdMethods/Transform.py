@@ -82,6 +82,19 @@ def place_prim_on_another(prim_path: str, another_prim_path: str) -> None:
     e.g. place "/apple" on "/table"
     """
 
+    ##  hints
+    # 1 find the bounding box of prim1 
+    # 2 find the bounding box of prim2
+    # 3 put prim2 on prim1
+    # 
+    # Get bounding box from prim
+    #    aabb_min, aabb_max = self.__usd_context.compute_path_world_bounding_box(
+    #        str(self.__prim_path)
+    #    )
+
+    context = omni.usd.get_context()
+
+
 
 # class transform:
 #     def rotate(self, object, rotation):

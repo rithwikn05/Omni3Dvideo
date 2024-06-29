@@ -1,6 +1,9 @@
 import omni.ext
 import omni.ui as ui
 from pxr import UsdGeom
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .UsdMethods.Select import *
 
@@ -18,66 +21,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self._window = ui.Window("Omni3DVideo Debug Window", width=300, height=300)
         with self._window.frame:
             with ui.VStack():
-                label = ui.Label("")
-
-                # def on_click():
-                #     self._count += 1
-                #     label.text = f"count: {self._count}"
-
-                # def on_reset():
-                #     self._count = 0
-                #     label.text = "empty"
-
-                def debug():
-                    from .UsdMethods.CreateAssets import createAssets
-                    from .UsdMethods.Transform import transform
-                    from .UsdMethods.Camera import camera
-                    
-                    #Create shapes
-                    createasset = createAssets()
-                    cube = createasset.create_cube("/a_cube")
-                    sphere = createasset.create_sphere("/a_sphere")
-
-                    #The order in which you apply the transformations changes where the object ends up
-
-                    #transform objects
-                    transformObj = transform()
-                    #cube
-                    xformableCube = UsdGeom.Xformable(cube)
-                    xformableCube.SetXformOpOrder([])
-                    transformObj.translate(xformableCube, (10.0, 15.0, 15.0))
-                    transformObj.orient(xformableCube)
-                    transformObj.scale(xformableCube, (75, 75, 75))
-                    transformObj.rotate(xformableCube, (0, 1, 0))
-
-                    #sph*ere
-                    xformableSphere = UsdGeom.Xformable(sphere)
-                    xformableSphere.SetXformOpOrder([])
-                    transformObj.scale(xformableSphere, (75, 75, 75))
-                    transformObj.rotate(xformableSphere, (0, 1, 0))
-                    transformObj.translate(xformableSphere, (10.0, 15.0, 15.0))
-
-                    #Modifying Camera
-                    cameraObj = camera()
-                    cameras = cameraObj.getCameraPrim()
-                    xformableSphere.SetXformOpOrder([])
-                    cameraObj.setFocalLength(cameras, 15.0)
-                    cameraObj.setHorizAperature(cameras, 36.0)
-                    cameraObj.setVertAperature(cameras, 24.0)
-                    cameraObj.setClippingRange(cameras, (0.1, 1000.0))
-
-                    #translate camera
-                    xformableCamera = UsdGeom.Xformable(cameras)
-                    xformableCamera.SetXformOpOrder([])
-                    transformObj.translate(xformableCamera, (100.0, 200.0, 500.0))
-                    transformObj.rotate(xformableCamera, (0, 1, 0))
-                    transformObj.scale(xformableCamera, (2, 2, 2))
-                    print("Hello")
-
-                #on_reset()
-
-                with ui.HStack():
-                    ui.Button("debug", height = 40, clicked_fn=self.debug)
+                label = ui.Label("Debug Window", height = 20)
+                ui.Button("debug", height = 20, clicked_fn=self.debug)
+                ui.Button("debug2", height = 20, clicked_fn=self.debug2)
 
     def on_shutdown(self):
         print("[omni.3d.video] omni 3d video shutdown")
@@ -139,3 +85,22 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         select_and_hide_cube() 
 
+    def debug2(self):
+        print("debug2")
+
+        # from .utils import get_extension_path
+        # logger.info(get_extension_path())
+
+        # from .UsdMethods.Material import generate_texture
+        # generate_texture("/World/Cube", "A chubby orange cat riding through space, digital art")
+        
+        # from .UsdMethods.Camera import create_camera_look_at
+        # create_camera_look_at("/World/Cube")
+
+        from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
+        
+        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
+        #keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
+
+        create_scale_animation("/World/Cube", 500)
+        
