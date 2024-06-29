@@ -88,12 +88,26 @@ def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", 
     prim_object = stage.GetPrimAtPath(prim_path)
 
     xformable_prim = UsdGeom.Xformable(prim_object)
-    rotation_op = xformable_prim.AddRotateXYZOp(UsdGeom.XformOp.PrecisionFloat, axis)
+    xformable_prim.SetXformOpOrder([])
 
-    rotation_op.Set(0, 0)
-    rotation_op.Set(degree, duration)
+    if axis == "X":
+        rotate_op = xformable_prim.AddRotateXOp(opSuffix='spin')
+    elif axis == "Y":
+        rotate_op = xformable_prim.AddRotateYOp(opSuffix='spin')
+    elif axis == "Z":
+        rotate_op = xformable_prim.AddRotateZOp(opSuffix='spin')
+    
+    rotate_op.Set(0, 0)
+    rotate_op.Set(degree, duration)
 
-    rotation_op.GetAttributeSpline().SetInterpolation(UsdGeom.Tokens.linear)
+    # xformable_prim = UsdGeom.Xformable(prim_object)
+    # xformable_prim.SetXformOpOrder([])
+    # rotation_op = xformable_prim.AddRotateXYZOp(UsdGeom.XformOp.PrecisionFloat, axis)
+
+    # rotation_op.Set(0, 0)
+    # rotation_op.Set(degree, duration)
+
+    # rotation_op.GetAttributeSpline().SetInterpolation(UsdGeom.Tokens.linear)
 
     # attribute = prim_object.GetAttribute("xform:rotate").Get()
     # rotation_vector = Gf.Vec3f(0.0, 0.0, 0.0)
@@ -122,6 +136,7 @@ def create_scale_animation(prim_path: str, duration: float, scale_ratio: float =
     prim_object = stage.GetPrimAtPath(prim_path)
 
     xformable_prim = UsdGeom.Xformable(prim_object)
+    xformable_prim.SetXformOpOrder([])
     scale_op = xformable_prim.AddScaleOp(UsdGeom.XformOp.PrecisionFloat)
 
     start_scale = Gf.Vec3f(0.0, 0.0, 0.0)
