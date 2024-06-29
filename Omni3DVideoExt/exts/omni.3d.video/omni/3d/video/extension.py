@@ -100,7 +100,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
         
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
-        #keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
+        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
-        create_movement_animation("/World/Cube", 500, "X")
+        #create_scale_animation("/World/Cube", 500, 2.0)
         

@@ -38,6 +38,8 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
         
         value = current_value
 
+    start_position = Gf.Vec3f(0.0, 0.0, 0.0)
+    attribute.Set(0, start_position)
     attribute.Set(value, Usd.TimeCode(time))
     
 def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
@@ -99,27 +101,6 @@ def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", 
     
     rotate_op.Set(0, 0)
     rotate_op.Set(degree, duration)
-
-    # xformable_prim = UsdGeom.Xformable(prim_object)
-    # xformable_prim.SetXformOpOrder([])
-    # rotation_op = xformable_prim.AddRotateXYZOp(UsdGeom.XformOp.PrecisionFloat, axis)
-
-    # rotation_op.Set(0, 0)
-    # rotation_op.Set(degree, duration)
-
-    # rotation_op.GetAttributeSpline().SetInterpolation(UsdGeom.Tokens.linear)
-
-    # attribute = prim_object.GetAttribute("xform:rotate").Get()
-    # rotation_vector = Gf.Vec3f(0.0, 0.0, 0.0)
-
-    # if axis == "X":
-    #     rotation_vector[0] = degree
-    # elif axis == "Y":
-    #     rotation_vector[1] = degree
-    # elif axis == "Z":
-    #     rotation_vector[2] = degree
-
-    # attribute.Set(rotation_vector, Usd.TimeCode(duration))
 
 def create_scale_animation(prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
     """
