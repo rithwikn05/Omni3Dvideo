@@ -22,8 +22,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("Debug Window", height = 20)
-                ui.Button("debug", height = 20, clicked_fn=self.debug)
-                ui.Button("debug2", height = 20, clicked_fn=self.debug2)
+                # ui.Button("debug", height = 20, clicked_fn=self.debug)
+                # ui.Button("debug2", height = 20, clicked_fn=self.debug2)
+                ui.Button("convert", height = 20, clicked_fn=self.convert)
 
     def on_shutdown(self):
         print("[omni.3d.video] omni 3d video shutdown")
@@ -104,3 +105,11 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         #create_scale_animation("/World/Cube", 500, 2.0)
         
+    def convert(self):
+        from .UsdMethods.ConvertToUSD import convert
+
+        import asyncio
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        asyncio.run(convert("anise_001_scan.obj", "UsdMethods/files/anise_001_scan_obj_to_usd.usd"))

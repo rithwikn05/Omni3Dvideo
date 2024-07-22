@@ -126,7 +126,7 @@ def create_scale_animation(prim_path: str, duration: float, scale_ratio: float =
     scale_op.Set(start_scale, 0)
     scale_op.Set(end_scale, duration)
 
-    scale_op.GetAttributeSpline().SetInterpolation(UsdGeom.Tokens.linear)
+    # scale_op.GetAttributeSpline().SetInterpolation(UsdGeom.Tokens.linear)    #This line is causing an error. I
 
     # stage = omni.usd.get_context().get_stage()
     # prim_object = stage.GetPrimAtPath(prim_path)
