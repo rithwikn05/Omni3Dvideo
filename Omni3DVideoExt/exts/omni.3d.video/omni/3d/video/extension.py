@@ -11,6 +11,11 @@ from .UsdMethods.Select import *
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
 # on_shutdown() is called.
 class Omni3dVideoExtension(omni.ext.IExt):
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.prompt_field = ""
+
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
     def on_startup(self, ext_id):
@@ -22,9 +27,14 @@ class Omni3dVideoExtension(omni.ext.IExt):
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("Debug Window", height = 20)
+                with ui.HStack(height = ui.Precent(20)):
+                    ui.Label("Prompt", width = 70)
+                    self.prompt_field = ui.StringField(multiline = True)
+                    print(self.prompt_field)
                 # ui.Button("debug", height = 20, clicked_fn=self.debug)
                 # ui.Button("debug2", height = 20, clicked_fn=self.debug2)
-                ui.Button("convert", height = 20, clicked_fn=self.convert)
+                # ui.Button("convert", height = 20, clicked_fn=self.convert)
+                ui.Button("generate", height = 20, clicked_fn=self.run_gpt_generated_code)
 
     def on_shutdown(self):
         print("[omni.3d.video] omni 3d video shutdown")
@@ -109,7 +119,16 @@ class Omni3dVideoExtension(omni.ext.IExt):
         from .UsdMethods.ConvertToUSD import convert
 
         import asyncio
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
 
-        asyncio.run(convert("anise_001_scan.obj", "UsdMethods/files/anise_001_scan_obj_to_usd.usd"))
+        asyncio.ensure_future(convert("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/anise_001_scan.obj", 
+                                      "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/anise_001_scan_usd.usd"))
+        
+    def run_gpt_generated_code(self):
+        from .UsdMethods.ReadObjectsToOmni import processing_gpt_calls
+        from . import UsdMethods
+        import inspect
+
+        if "camera" in self.prompt_field:
+            omni_code = inspect.getsource(UsdMethods.Camera)
+
+        processing_gpt_calls(self, self.prompt_field, omni_code)
