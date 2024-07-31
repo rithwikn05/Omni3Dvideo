@@ -42,12 +42,12 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     stage = omni.usd.get_context().get_stage()
     prim = stage.GetPrimAtPath(prim_path)
-    rotation_vector = (0.0, 0.0, 0.0)
+    rotation_vector = Gf.Vec3f(0.0, 0.0, 0.0)
     if axis == 'x':
         rotation_vector[0] = degree
     elif axis == 'y':

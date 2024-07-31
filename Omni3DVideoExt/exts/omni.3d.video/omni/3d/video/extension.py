@@ -27,12 +27,12 @@ class Omni3dVideoExtension(omni.ext.IExt):
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("Debug Window", height = 20)
-                with ui.HStack(height = ui.Precent(20)):
+                with ui.HStack(height = 20):
                     ui.Label("Prompt", width = 70)
                     self.prompt_field = ui.StringField(multiline = True)
                     print(self.prompt_field)
                 # ui.Button("debug", height = 20, clicked_fn=self.debug)
-                # ui.Button("debug2", height = 20, clicked_fn=self.debug2)
+                ui.Button("debug2", height = 20, clicked_fn=self.debug2)
                 # ui.Button("convert", height = 20, clicked_fn=self.convert)
                 ui.Button("generate", height = 20, clicked_fn=self.run_gpt_generated_code)
 
@@ -108,12 +108,23 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # from .UsdMethods.Camera import create_camera_look_at
         # create_camera_look_at("/World/Cube")
 
-        from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
+        # from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
         
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
-        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
+        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
+
+        from .UsdMethods.ReadObjectsToOmni import import_asset
+        from .UsdMethods.Transform import rotate_prim
+        # import_asset("battery")
 
         #create_scale_animation("/World/Cube", 500, 2.0)
+
+        # Load the battery into the scene
+        battery_path = import_asset("battery")
+
+        # Rotate the battery by 60 degrees on the y-axis
+        rotate_prim(battery_path, "y", 60.0)
+
         
     def convert(self):
         from .UsdMethods.ConvertToUSD import convert
