@@ -34,7 +34,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("Debug Window", height = 20)
-                with ui.HStack(height = ui.Precent(20)):
+                with ui.HStack(height = ui.Percent(20)):
                     ui.Label("Prompt", width = 70)
                     self.prompt_field = ui.StringField(multiline = True)
                     print(self.prompt_field)
