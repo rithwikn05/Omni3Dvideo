@@ -34,7 +34,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         with self._window.frame:
             with ui.VStack():
                 label = ui.Label("Debug Window", height = 20)
-                with ui.HStack(height = ui.Percent(20)):
+                with ui.HStack(height = ui.Precent(20)):
                     ui.Label("Prompt", width = 70)
                     self.prompt_field = ui.StringField(multiline = True)
                     print(self.prompt_field)
@@ -115,14 +115,12 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # from .UsdMethods.Camera import create_camera_look_at
         # create_camera_look_at("/World/Cube")
 
-        print(self.prompt_field.name)
-
-        # from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
+        from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
         
-        # # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
-        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
+        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
+        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
-        # #create_scale_animation("/World/Cube", 500, 2.0)
+        #create_scale_animation("/World/Cube", 500, 2.0)
         
     def convert(self):
         from .UsdMethods.ConvertToUSD import convert
