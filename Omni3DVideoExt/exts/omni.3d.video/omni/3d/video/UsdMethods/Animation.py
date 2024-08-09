@@ -47,7 +47,7 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     # attribute.Set(value, Usd.TimeCode(time))
 
     stage = omni.usd.get_context().get_stage()
-
+    stage.DefinePrim(prim_path, "Cube")
 
     # Get the prim
     prim = stage.GetPrimAtPath(prim_path)
@@ -56,12 +56,13 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     
     if "." in attribute_path:
         prim_attr_path, attr_path_and_component = attribute_path.split(".")
-        print("attr_path_and_component: ", attr_path_and_component)
+        # print("attr_path_and_component: ", attr_path_and_component)
         if "|" in attr_path_and_component:
             attr_path, attr_component = attr_path_and_component.split("|")  #attr_path: "xformOp:translate"
-            print("attr_path:", attr_path)
-            print("attr_component: ", attr_component)
+            # print("attr_path:", attr_path)
+            # print("attr_component: ", attr_component)
 
+    print("attr_path:", attr_path)
      # Ensure the prim is a Xformable
     xformable = UsdGeom.Xformable(prim)
 
@@ -75,9 +76,10 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     
     
     print(attr_path_and_component)
+    attribute_path = prim_attr_path + "." + attr_path
 
     # Get the attribute using the full attribute path
-    xformable = stage.GetAttributeAtPath(attr_path)
+    xformable = stage.GetAttributeAtPath(attribute_path)
     if not xformable:
         print(f"Available attributes for {prim_path}:")
         for attr in prim.GetAttributes():
@@ -86,6 +88,8 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
 
     # Set the keyframe
     xformable.Set(value, Usd.TimeCode(time))
+
+    xformable.SetXformOpOrder([])
     
 def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
     """
