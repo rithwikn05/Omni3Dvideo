@@ -85,11 +85,13 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
         for attr in prim.GetAttributes():
             print(f"  {attr.GetName()}")
         raise ValueError(f"Attribute not found: {attribute_path} on prim {prim_path}")
+    
+    current_value = Gf.Vec3f(value, value, value)
 
     # Set the keyframe
-    xformable.Set(value, Usd.TimeCode(time))
+    xformable.Set(current_value, Usd.TimeCode(time))
 
-    xformable.SetXformOpOrder([])
+    # xformable.SetXformOpOrder([])
     
 def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
     """
