@@ -2,6 +2,12 @@ import omni.ext
 import omni.ui as ui
 from pxr import UsdGeom
 import logging
+import omni.kit.pipapi
+# from openai import OpenAI
+import os
+import re
+import json
+# import openai
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +43,6 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 with ui.HStack(height = ui.Percent(20)):
                     ui.Label("Prompt", width = 70)
                     self.prompt_field = ui.StringField(multiline = True)
-                    print(self.prompt_field)
                 # ui.Button("debug", height = 20, clicked_fn=self.debug)
                 ui.Button("debug2", height = 20, clicked_fn=self.debug2)
                 # ui.Button("convert", height = 20, clicked_fn=self.convert)
@@ -116,11 +121,15 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # create_camera_look_at("/World/Cube")
 
         from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
-        
-        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 0.0, 0.0)
-        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
-        #create_scale_animation("/World/Cube", 500, 2.0)
+        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 5.0, 50.0)
+        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
+
+        # create_scale_animation("/World/Cube", 500, 2.0)
+        # print(self.prompt_field.name)
+
+        # from .UsdMethods.ReadObjectsToOmni import import_asset
+        # import_asset("battery")
         
     def convert(self):
         from .UsdMethods.ConvertToUSD import convert
@@ -130,26 +139,61 @@ class Omni3dVideoExtension(omni.ext.IExt):
         asyncio.ensure_future(convert("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/anise_001_scan.obj", 
                                       "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/anise_001_scan_usd.usd"))
         
+
+        
     def run_gpt_generated_code(self):
-        from .UsdMethods.ReadObjectsToOmni import pulling_from_aws, processing_gpt_calls, parsing_python_scripts
+        from .UsdMethods.ReadObjectsToOmni import import_asset, read_parsed_code
         from .UsdMethods.GPTCalls import get_code_from_gpt
-        from . import UsdMethods
-        import inspect
+        import_asset("battery")
+        omniverse_code = read_parsed_code("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
+        code = get_code_from_gpt("battery", omniverse_code)
+        # print(code)
+        import requests
 
-        # pulling_from_aws(self.prompt_field)
-        # if "camera" in self.prompt_field:
-        #     omni_code = inspect.getsource(UsdMethods.Camera)
+        # openai_api_key = "sk-XFbm9kZEDffLd85VzKTAdAqPRV-AOtLJQpeX4Xi_KHT3BlbkFJYW9yCcTjbd0TCLhaWCvU9hYD4r5t6UHuFi_S4gt8wA"# put yout api key here
+        # if openai_api_key is None:
+        #     raise ValueError("OpenAI API key is not set in environment variables.")
 
-        # pulling_from_aws("battery")
+        # url = "https://api.openai.com/v1/chat/completions"
 
-        
+        # headers = {
+        #     "Content-Type": "application/json",
+        #     "Authorization": f"Bearer {openai_api_key}"
+        # }
 
-        with open("ParsedCode.txt", 'r') as file:
-            content = file.read()
-        
-        output = get_code_from_gpt(self.prompt_field, content)
+        # data = {
+        #     "model": "gpt-3.5-turbo",
+        #     "messages": [
+        #         {
+        #             "role": "system",
+        #             "content": f"You are a coding assistant who will use this code: to help perform the tasks requested by the user."
+        #         },
+        #         {
+        #             "role": "user",
+        #             "content": "battery"
+        #         }
+        #     ]
+        # }
 
-        # output = get_code_from_gpt()
+        # response = requests.post(url, headers=headers, json=data)
 
-        # output = processing_gpt_calls(self, self.prompt_field)
-        print(output)
+        # # Check if the request was successful
+        # if response.status_code == 200:
+        #     content = response.json()['choices'][0]['message']['content']
+        # else:
+        #     print("Error was got.")
+
+        # # if content:
+        # #     code_match = re.search(r'```(?:python)?\n([\s\S]*?)```', content)
+        # #     code = code_match.group(1) if code_match else content
+        # # else:
+        # #     code = "No code or content was generated."
+
+        # # if code and code != "No code or content was generated.":
+        # #     lines = code.split('\n')
+        # #     code_lines = [line for line in lines if line.strip() and not line.strip()]
+        # #     # return '\n'.join(code_lines)
+        # # else:
+        # #     return code
+        # print(code)
+    

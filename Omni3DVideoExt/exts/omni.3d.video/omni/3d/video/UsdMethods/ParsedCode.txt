@@ -18,6 +18,7 @@ def create_camera_rotate_around_object_animation(prim_path: str, duration: float
     """
 
 
+
 def move_prim(prim_path: str, direction: str, distance: float) -> None:
     """
     Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
@@ -37,7 +38,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -151,7 +152,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -265,7 +266,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -379,7 +380,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -493,7 +494,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -607,7 +608,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -721,7 +722,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -835,7 +836,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -949,7 +950,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -1063,7 +1064,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -1177,7 +1178,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -1291,7 +1292,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -1405,7 +1406,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     
@@ -1519,235 +1520,7 @@ def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
     Args:
         prim_path (str): the path of the prim to move
         axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
-    """
-
-    
-
-def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
-    """
-    Scale the prim by a ratio
-
-    Args:
-        prim_path (str): the path of the prim to move
-        relative_scale_ratio: a float suggestion the scale ratio
-    """
-
-
-def place_prim_on_another(prim_path: str, another_prim_path: str) -> None:
-    """
-    Place the prim on another prim
-
-    Args:
-        prim_path (str): the path of the prim to move
-        another_prim_path (str): the path of the another prim
-    
-    e.g. place "/apple" on "/table"
-    """
-
-
-
-def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> None:
-    """
-    Keyframe an attribute of a prim at a time with a value
-
-    Args:
-        prim_path (str): the path of the prim to keyframe
-        attribute (str): the attribute to keyframe
-        time (float): the time to keyframe
-        value (float): the value to keyframe
-    """
-
-    
-def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
-    """
-    Create a movement animation for a prim
-
-    Args:
-        prim_path (str): the path of the prim to animate
-        duration (float): the duration of the animation
-        direction (str): the direction to move
-        distance (float): the distance to move
-    """
-
-
-    
-def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", degree: float = 360) -> None:
-    """
-    Create a 360 degree rotation animation for a prim
-
-    Args:
-        prim_path (str): the path of the prim to animate
-        duration (float): the duration of the animation
-        axis (str): the axis to rotate
-    """
-
-
-def create_scale_animation(prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
-    """
-    Create a scale animation for a prim
-
-    Args:
-        prim_path (str): the path of the prim to animate
-        duration (float): the duration of the animation
-        scale_ratio (float): the scale ratio
-    """
-
-
-
-def create_camera_look_at(look_at_prim_path: str, angle: float = 45, distance: float = 200) -> None:
-    """
-    Create a camera at a position and make it look at a point
-
-    Args:
-        prim_path (str): the path of the object to look at
-        angle (float): the angle of the camera 
-        distance (float): the distance of the camera
-    """
-
-
-
-def create_camera_rotate_around_object_animation(prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
-    """
-    Create a camera animation that rotates around an object
-    """
-
-
-
-def move_prim(prim_path: str, direction: str, distance: float) -> None:
-    """
-    Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
-   
-    Args:
-        prim_path (str): the path of the prim to move
-        direction (str): can be up, down, left, right, front, back
-        distance (float): a float suggestion the distance to move
-    """
-
-
-
-def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
-    """
-    Rotate the prim along an axis by some degree
-
-    Args:
-        prim_path (str): the path of the prim to move
-        axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
-    """
-
-    
-
-def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
-    """
-    Scale the prim by a ratio
-
-    Args:
-        prim_path (str): the path of the prim to move
-        relative_scale_ratio: a float suggestion the scale ratio
-    """
-
-
-def place_prim_on_another(prim_path: str, another_prim_path: str) -> None:
-    """
-    Place the prim on another prim
-
-    Args:
-        prim_path (str): the path of the prim to move
-        another_prim_path (str): the path of the another prim
-    
-    e.g. place "/apple" on "/table"
-    """
-
-
-
-def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> None:
-    """
-    Keyframe an attribute of a prim at a time with a value
-
-    Args:
-        prim_path (str): the path of the prim to keyframe
-        attribute (str): the attribute to keyframe
-        time (float): the time to keyframe
-        value (float): the value to keyframe
-    """
-
-    
-def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
-    """
-    Create a movement animation for a prim
-
-    Args:
-        prim_path (str): the path of the prim to animate
-        duration (float): the duration of the animation
-        direction (str): the direction to move
-        distance (float): the distance to move
-    """
-
-
-    
-def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", degree: float = 360) -> None:
-    """
-    Create a 360 degree rotation animation for a prim
-
-    Args:
-        prim_path (str): the path of the prim to animate
-        duration (float): the duration of the animation
-        axis (str): the axis to rotate
-    """
-
-
-def create_scale_animation(prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
-    """
-    Create a scale animation for a prim
-
-    Args:
-        prim_path (str): the path of the prim to animate
-        duration (float): the duration of the animation
-        scale_ratio (float): the scale ratio
-    """
-
-
-
-def create_camera_look_at(look_at_prim_path: str, angle: float = 45, distance: float = 200) -> None:
-    """
-    Create a camera at a position and make it look at a point
-
-    Args:
-        prim_path (str): the path of the object to look at
-        angle (float): the angle of the camera 
-        distance (float): the distance of the camera
-    """
-
-
-
-def create_camera_rotate_around_object_animation(prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
-    """
-    Create a camera animation that rotates around an object
-    """
-
-
-
-def move_prim(prim_path: str, direction: str, distance: float) -> None:
-    """
-    Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
-   
-    Args:
-        prim_path (str): the path of the prim to move
-        direction (str): can be up, down, left, right, front, back
-        distance (float): a float suggestion the distance to move
-    """
-
-
-
-def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
-    """
-    Rotate the prim along an axis by some degree
-
-    Args:
-        prim_path (str): the path of the prim to move
-        axis (str): can be x, y, z
-        degree (float): a float suggestion the euler degree to rotate
+        degree (float): a float suggestion the Euler degree to rotate
     """
 
     

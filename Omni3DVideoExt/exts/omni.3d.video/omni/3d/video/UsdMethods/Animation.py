@@ -12,35 +12,80 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
         time (float): the time to keyframe
         value (float): the value to keyframe
     """
+    # stage = omni.usd.get_context().get_stage()
+    # stage.DefinePrim(prim_path, "Xform")
+    # stage.DefinePrim("/camera", "Camera")
+    # prim_path_object = stage.GetPrimAtPath(prim_path)
+    
+    # if "." in attribute_path:
+    #     prim_attr_path, attr_path_and_component = attribute_path.split(".")
+    #     print("attr_path_and_component: ", attr_path_and_component)
+    #     if "|" in attr_path_and_component:
+    #         attr_path, attr_component = attr_path_and_component.split("|")  #attr_path: "xformOp:translate"
+    #         print("attr_path:", attr_path)
+    #         print("attr_component: ", attr_component)
+    
+    # attribute = prim_path_object.GetAttribute(attr_path).Get()   #This line is not working properly. For some reason the attribute type is not being transfered correctly
+
+    # if attr_component:
+    #     current_value = attribute.Get(Usd.TimeCode(time))
+    #     if current_value is None:
+    #         current_value = Gf.Vec3f(0, 0, 0)
+        
+    #     if attr_component == "x":
+    #         current_value[0] = value
+    #     elif attr_component == "y":
+    #         current_value[1] = value
+    #     elif attr_component == "z":
+    #         current_value[2] = value
+        
+    #     value = current_value
+    # # print("attribute: ", attribute)
+
+    # start_position = Gf.Vec3f(0.0, 0.0, 0.0)
+    # attribute.Set(start_position, 0)
+    # attribute.Set(value, Usd.TimeCode(time))
+
     stage = omni.usd.get_context().get_stage()
-    stage.DefinePrim(prim_path)
-    stage.DefinePrim("/camera", "Camera")
-    prim_path_object = stage.GetPrimAtPath(prim_path)
+
+
+    # Get the prim
+    prim = stage.GetPrimAtPath(prim_path)
+    if not prim.IsValid():
+        raise ValueError(f"Prim not found at path: {prim_path}")
     
     if "." in attribute_path:
         prim_attr_path, attr_path_and_component = attribute_path.split(".")
+        print("attr_path_and_component: ", attr_path_and_component)
         if "|" in attr_path_and_component:
-            attr_path, attr_component = attr_path_and_component.split("|")
+            attr_path, attr_component = attr_path_and_component.split("|")  #attr_path: "xformOp:translate"
+            print("attr_path:", attr_path)
+            print("attr_component: ", attr_component)
+
+     # Ensure the prim is a Xformable
+    xformable = UsdGeom.Xformable(prim)
+
+    # # Add transform operations if they don't exist
+    # if attr_path == "xformOp:translate":
+    #     xformable = xformable.AddTranslateOp()
+    # elif attr_path == "xformOp:rotate":
+    #     xformable = xformable.AddRotateXYZOp()
+    # elif attr_path == "xformOp:scale":
+    #     xformable = xformable.AddScaleOp()
     
-    attribute = prim_path_object.GetAttribute(attr_path)   #This line is not working properly. For some reason the attribute type is not being transfered correctly
+    
+    print(attr_path_and_component)
 
-    if attr_component:
-        current_value = attribute.Get(Usd.TimeCode(time))
-        if current_value is None:
-            current_value = Gf.Vec3f(0, 0, 0)
-        
-        if attr_component == "x":
-            current_value[0] = value
-        elif attr_component == "y":
-            current_value[1] = value
-        elif attr_component == "z":
-            current_value[2] = value
-        
-        value = current_value
+    # Get the attribute using the full attribute path
+    xformable = stage.GetAttributeAtPath(attr_path)
+    if not xformable:
+        print(f"Available attributes for {prim_path}:")
+        for attr in prim.GetAttributes():
+            print(f"  {attr.GetName()}")
+        raise ValueError(f"Attribute not found: {attribute_path} on prim {prim_path}")
 
-    start_position = Gf.Vec3f(0.0, 0.0, 0.0)
-    attribute.Set(0, start_position)
-    attribute.Set(value, Usd.TimeCode(time))
+    # Set the keyframe
+    xformable.Set(value, Usd.TimeCode(time))
     
 def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
     """

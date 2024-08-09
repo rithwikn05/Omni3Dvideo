@@ -2,6 +2,13 @@ import boto3
 import os
 import re
 
+
+import os   
+import re
+import json
+from pxr import UsdGeom, Usd, Sdf
+import omni.usd
+
 from ..utils import get_extension_path
 """
 1. First user enters the object/objects they want to appear on the scene and what animation they 
@@ -11,6 +18,8 @@ want to happen (ex: rotate camera around the object)
 specified movement and generate a python script to do it
 4. Put this script into Omniverse and animate the object
 """
+def test():
+    print("hello")
 
 def processing_gpt_calls(prompt):
     from ..UsdMethods.GPTCalls import get_code_from_gpt
@@ -19,6 +28,10 @@ def processing_gpt_calls(prompt):
         content = file.read()
     code = get_code_from_gpt(prompt, content)
     return code 
+
+def read_parsed_code(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()
 
 
 def import_asset(prompt) -> str:
@@ -46,64 +59,86 @@ def import_asset(prompt) -> str:
     asset_folder = f"{ext_path}/downloads/{object}"
     os.makedirs(asset_folder, exist_ok=True)
 
-    local_path = os.path.join(asset_folder, f"model.usd")
+    local_path = os.path.join(asset_folder, f"model.usd").replace("\\", "/")
+    print(local_path)
 
     if os.path.exists(local_path):
         print(f"File already exists at {local_path}")
     else:
         s3.download_file(bucket_name, s3_path, local_path)
+    
+    #Start of creating a reference for the prim
+    add_reference(local_path)
 
-def parsing_python_scripts(file_path, output_file):
-    try:
-        # Check if input file exists
-        if not os.path.exists(file_path):
-            print(f"Error: Input file '{file_path}' does not exist.")
-            return
+def add_reference(local_path):
+    # Create new USD stage
+    stage: Usd.Stage = omni.usd.get_context().get_stage()
 
-        with open(file_path, 'r') as file:
-            content = file.read()
+    # Create and define default prim, so this file can be easily referenced again
+    default_prim = UsdGeom.Xform.Define(stage, Sdf.Path("/New_Stage"))
+    stage.SetDefaultPrim(default_prim.GetPrim())
 
-        # Pattern to match function definitions and their docstrings, even if docstring is missing
-        pattern = (
-            r'^\s*def\s+\w+\s*\([^)]*\)\s*->\s*\w+\s*:\s*"""\s*[\s\S]*?\s*"""'
+    # Create an xform which should hold all references
+    ref_prim: Usd.Prim = UsdGeom.Xform.Define(stage, Sdf.Path("/New_Stage/ref_prim")).GetPrim()
+
+    # Add an external reference to the local_path USD file
+    add_ext_reference(ref_prim, local_path, Sdf.Path.emptyPath)
+
+    # Export the stage to a string and print it
+    usda = stage.GetRootLayer().ExportToString()
+    print(usda)
+
+    # Get a list of all prepended references
+    references = []
+    for prim_spec in ref_prim.GetPrimStack():
+        references.extend(prim_spec.referenceList.prependedItems)
+
+    # Check that the reference prim was created and that the references are correct
+    assert ref_prim.IsValid()
+    assert references[0] == Sdf.Reference(assetPath=local_path)
+
+def add_int_reference(prim: Usd.Prim, ref_target_path: Sdf.Path) -> None:
+        references: Usd.References = prim.GetReferences()
+        references.AddInternalReference(ref_target_path)
+
+def add_ext_reference(prim: Usd.Prim, ref_asset_path: str, ref_target_path: Sdf.Path) -> None:
+        references: Usd.References = prim.GetReferences()
+        references.AddReference(
+            assetPath=ref_asset_path,
+            primPath=ref_target_path # OPTIONAL: Reference a specific target prim. Otherwise, uses the referenced layer's defaultPrim.
         )
 
 
-        # Find all matches
-        matches = re.findall(pattern, content, re.MULTILINE)
-        
-        # Find all matches
-        # matches = re.findall(pattern, content, re.MULTILINE)
+def parsing_python_scripts(file_path, output_file):
+    if not os.path.exists(file_path):
+        print(f"Error: Input file '{file_path}' does not exist.")
+        return
 
-        # Check if output directory exists, if not, create it
-        output_dir = os.path.dirname(output_file)
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+    with open(file_path, 'r') as file:
+        content = file.read()
 
-        # Write matches to output file
-        try:
-            with open(output_file, 'a') as out_file:
-                for match in matches:
-                    out_file.write(match + "\n\n")  # Add extra newline for separation
-            print(f"Extracted {len(matches)} functions to {output_file}")
-        except PermissionError:
-            print(f"Error: Permission denied when trying to write to '{output_file}'.")
-            print("Please check if you have write permissions or if the file is open in another program.")
-        except Exception as e:
-            print(f"Error writing to output file: {str(e)}")
+    # Pattern to match function definitions and their docstrings, even if docstring is missing
+    pattern = r'^\s*def\s+\w+\s*\([^)]*\)\s*->\s*\w+\s*:\s*"""\s*[\s\S]*?\s*"""'
 
-        # Debug: print the first 500 characters of the file content
-        print("\nFirst 500 characters of the file:")
-        print(content[:500])
+    # Find all matches
+    matches = re.findall(pattern, content, re.MULTILINE)
 
-        # Debug: print the first few matches (if any)
-        print("\nFirst few matches:")
-        for match in matches[:3]:
-            print(match)
-            print("---")
+    # Check if output directory exists, if not, create it
+    output_dir = os.path.dirname(output_file)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
+    # Write matches to output file
+    try:
+        with open(output_file, 'a') as out_file:
+            for match in matches:
+                out_file.write(match + "\n\n")  # Add extra newline for separation
+        print(f"Extracted {len(matches)} functions to {output_file}")
+    except PermissionError:
+        print(f"Error: Permission denied when trying to write to '{output_file}'.")
+        print("Please check if you have write permissions or if the file is open in another program.")
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        print(f"Error writing to output file: {str(e)}")
 
 parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Camera.py", "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
 
@@ -111,10 +146,6 @@ parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omn
 
 parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Animation.py", "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
 
-output = processing_gpt_calls("battery")
-print(output)
-# pulling_from_aws("rotate around battery.")
-import_asset("battery")
 
 
 
