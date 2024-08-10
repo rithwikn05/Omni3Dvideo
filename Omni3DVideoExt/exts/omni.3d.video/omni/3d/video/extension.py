@@ -122,7 +122,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
 
-        keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 5.0, 50.0)
+        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 5.0, 50.0)
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
         # create_scale_animation("/World/Cube", 500, 2.0)
@@ -130,6 +130,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         # from .UsdMethods.ReadObjectsToOmni import import_asset
         # import_asset("battery")
+
+        from .UsdMethods.Material import add_material
+        add_material("/World/Cube", (1, 0, 0)) 
         
     def convert(self):
         from .UsdMethods.ConvertToUSD import convert

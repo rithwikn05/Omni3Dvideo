@@ -45,7 +45,3 @@ name = "omni.3d.video"
 dependencies = [
     "omni.kit.ui_test" # UI testing extension
 ]
-
-[python.pipapi]
-requirements = ["openai"]
-use_online_index = true

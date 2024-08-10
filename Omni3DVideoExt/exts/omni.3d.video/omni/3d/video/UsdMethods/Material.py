@@ -5,7 +5,41 @@ import logging
 
 import omni.usd
 
+from typing import Optional, List, Tuple
+
 logger = logging.getLogger(__name__)
+
+def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
+    """
+    Add a material to a prim with basic color
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        diffuse_color (Tuple[float]): a tuple of RGB floats suggestion the color of the material
+    """
+    stage = omni.usd.get_context().get_stage()
+
+     # bind material and texture
+    stage = omni.usd.get_context().get_stage()
+    mtl_random_name = str(uuid.uuid4())[:3]
+    mtl_path = Sdf.Path(f"/World/Looks/GenAI_OmniPBR_{mtl_random_name}")
+    mtl = UsdShade.Material.Define(stage, mtl_path)
+    shader = UsdShade.Shader.Define(stage, mtl_path.AppendPath("Shader"))
+    # shader.CreateImplementationSourceAttr(UsdShade.Tokens.sourceAsset)
+    shader.SetSourceAsset("OmniPBR.mdl", "mdl")
+    shader.SetSourceAssetSubIdentifier("OmniPBR", "mdl")
+    shader.CreateInput("diffuse_color_constant", Sdf.ValueTypeNames.Color3f).Set(diffuse_color)
+
+    mtl.CreateSurfaceOutput("mdl").ConnectToSource(shader.ConnectableAPI(), "out")
+    mtl.CreateDisplacementOutput("mdl").ConnectToSource(shader.ConnectableAPI(), "out")
+    mtl.CreateVolumeOutput("mdl").ConnectToSource(shader.ConnectableAPI(), "out")
+
+    # bind the material to the prim
+    UsdShade.MaterialBindingAPI(stage.GetPrimAtPath(prim_path)).Bind(mtl, UsdShade.Tokens.strongerThanDescendants)
+
+
+
+
 
 def generate_texture(prim_path: str, text: str = "A chubby orange cat riding through space, digital art") -> None:
     """
