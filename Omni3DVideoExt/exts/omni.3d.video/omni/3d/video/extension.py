@@ -131,9 +131,11 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # from .UsdMethods.ReadObjectsToOmni import import_asset
         # import_asset("battery")
 
-        from .UsdMethods.Material import add_material
-        add_material("/World/Cube", (1, 0, 0)) 
-        
+        # from .UsdMethods.Material import add_material
+        # add_material("/World/Cube", (1, 0, 0)) 
+
+        from .UsdMethods.Camera import create_camera_look_at
+        create_camera_look_at("/World/Cube")        
     def convert(self):
         from .UsdMethods.ConvertToUSD import convert
 

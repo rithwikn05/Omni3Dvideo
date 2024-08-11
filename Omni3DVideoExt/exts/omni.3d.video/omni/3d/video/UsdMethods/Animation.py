@@ -66,6 +66,13 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
      # Ensure the prim is a Xformable
     xformable = UsdGeom.Xformable(prim)
 
+    if not "xformOp:translate" in prim.GetAttributes:
+        xformable = xformable.AddTranslateOp()
+    if not "xformOp:rotate" in prim.GetAttributes: 
+        xformable = xformable.AddRotateXYZOp()
+    if not "xformOp:scale" in prim.GetAttributes: 
+        xformable = xformable.AddScaleOp()
+
     # # Add transform operations if they don't exist
     # if attr_path == "xformOp:translate":
     #     xformable = xformable.AddTranslateOp()
