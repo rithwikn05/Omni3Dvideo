@@ -4,7 +4,7 @@ import omni.usd
 import math
 
 
-def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 200)  -> None:
+def create_camera_look_at(look_at_prim_path: str, angle: float = 10, distance: float = 50)  -> None:
     """
     Create a camera at a position and make it look at a point
 
@@ -21,12 +21,17 @@ def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: f
 
     angle_in_radians = math.radians(angle) - math.radians(angle) * 2
 
+    prim = stage.GetPrimAtPath(look_at_prim_path)
+    matrix: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
+    translate: Gf.Vec3d = matrix.ExtractTranslation()
+
     camera_xformable = UsdGeom.Xformable(cameraPrim)
     camera_xformable.ClearXformOpOrder()
 
     z_dist = distance * math.cos(angle_in_radians)
     y_dist = distance * math.sin(angle_in_radians)
-    translation_position = Gf.Vec3f(0, -y_dist, z_dist)
+    translation_position = Gf.Vec3f(translate[0], translate[1] - y_dist, translate[2] + z_dist)
+
     camera_angle = Gf.Quatf(math.cos(angle_in_radians / 2), axis[0] * math.sin(angle_in_radians / 2), axis[1] * math.sin(angle_in_radians / 2), axis[2] * math.sin(angle_in_radians / 2))
 
     camera_xformable.AddTranslateOp().Set(translation_position)
