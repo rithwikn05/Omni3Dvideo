@@ -1,5 +1,6 @@
 import omni.kit.commands
 from pxr import Usd, Sdf, Gf, UsdGeom
+import math
 
 
 def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> None:
@@ -12,40 +13,6 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
         time (float): the time to keyframe
         value (float): the value to keyframe
     """
-    # stage = omni.usd.get_context().get_stage()
-    # stage.DefinePrim(prim_path, "Xform")
-    # stage.DefinePrim("/camera", "Camera")
-    # prim_path_object = stage.GetPrimAtPath(prim_path)
-    
-    # if "." in attribute_path:
-    #     prim_attr_path, attr_path_and_component = attribute_path.split(".")
-    #     print("attr_path_and_component: ", attr_path_and_component)
-    #     if "|" in attr_path_and_component:
-    #         attr_path, attr_component = attr_path_and_component.split("|")  #attr_path: "xformOp:translate"
-    #         print("attr_path:", attr_path)
-    #         print("attr_component: ", attr_component)
-    
-    # attribute = prim_path_object.GetAttribute(attr_path).Get()   #This line is not working properly. For some reason the attribute type is not being transfered correctly
-
-    # if attr_component:
-    #     current_value = attribute.Get(Usd.TimeCode(time))
-    #     if current_value is None:
-    #         current_value = Gf.Vec3f(0, 0, 0)
-        
-    #     if attr_component == "x":
-    #         current_value[0] = value
-    #     elif attr_component == "y":
-    #         current_value[1] = value
-    #     elif attr_component == "z":
-    #         current_value[2] = value
-        
-    #     value = current_value
-    # # print("attribute: ", attribute)
-
-    # start_position = Gf.Vec3f(0.0, 0.0, 0.0)
-    # attribute.Set(start_position, 0)
-    # attribute.Set(value, Usd.TimeCode(time))
-
     stage = omni.usd.get_context().get_stage()
     stage.DefinePrim(prim_path, "Cube")
 
@@ -134,7 +101,7 @@ def create_movement_animation(prim_path: str, duration: float, direction: str = 
     xformable_object.Set(end_position, duration)
 
     
-def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", degree: float = 360) -> None:
+def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
     """
     Create a 360 degree rotation animation for a prim
 
@@ -147,18 +114,23 @@ def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", 
     stage.DefinePrim(prim_path, "Cube")
     prim_object = stage.GetPrimAtPath(prim_path)
 
+    angle_in_radians = math.radians(degree) - math.radians(degree) * 2
+
     xformable_prim = UsdGeom.Xformable(prim_object)
     xformable_prim.SetXformOpOrder([])
 
-    if axis == "X":
-        rotate_op = xformable_prim.AddRotateXOp(opSuffix='spin')
-    elif axis == "Y":
-        rotate_op = xformable_prim.AddRotateYOp(opSuffix='spin')
-    elif axis == "Z":
-        rotate_op = xformable_prim.AddRotateZOp(opSuffix='spin')
+    if axis.lower() == "x":
+        axis = Gf.Vec3d(1, 0, 0).GetNormalized()
+    elif axis.lower() == "y":
+        axis = Gf.Vec3d(0, 1, 0).GetNormalized()
+    elif axis.lower() == "z":
+        axis = Gf.Vec3d(0, 0, 1).GetNormalized()
     
-    rotate_op.Set(0, 0)
-    rotate_op.Set(degree, duration)
+    new_angle = Gf.Quatf(math.cos(angle_in_radians / 2), axis[0] * math.sin(angle_in_radians / 2), axis[1] * math.sin(angle_in_radians / 2), axis[2] * math.sin(angle_in_radians / 2))
+    xformable_prim = xformable_prim.AddOrientOp()
+    
+    xformable_prim.Set(Gf.Quatf(0.0, 0.0, 0.0, 0.0), 0)
+    xformable_prim.Set(new_angle, duration)
 
 def create_scale_animation(prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
     """
@@ -183,20 +155,3 @@ def create_scale_animation(prim_path: str, duration: float, scale_ratio: float =
     
     scale_op.Set(start_scale, 0)
     scale_op.Set(end_scale, duration)
-
-    # scale_op.GetAttributeSpline().SetInterpolation(UsdGeom.Tokens.linear)    #This line is causing an error. I
-
-    # stage = omni.usd.get_context().get_stage()
-    # prim_object = stage.GetPrimAtPath(prim_path)
-
-    # attribute = prim_object.GetAttribute("xform:scale").Get()
-    # rotation_vector = Gf.Vec3f(0.0, 0.0, 0.0)
-
-    # if axis == "X":
-    #     rotation_vector[0] = degree
-    # elif axis == "Y":
-    #     rotation_vector[1] = degree
-    # elif axis == "Z":
-    #     rotation_vector[2] = degree
-
-    # attribute.Set(rotation_vector, Usd.TimeCode(duration))

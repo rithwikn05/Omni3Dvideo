@@ -4,7 +4,7 @@ import omni.usd
 import math
 
 
-def create_camera_look_at(look_at_prim_path: str, angle: float = 45, distance: float = 200)  -> None:
+def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 50)  -> None:
     """
     Create a camera at a position and make it look at a point
 

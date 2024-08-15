@@ -122,6 +122,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
 
+        create_scale_animation("/World/Cube", 15.0, 8.0)
+
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 5.0, 50.0)
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
@@ -134,8 +136,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # from .UsdMethods.Material import add_material
         # add_material("/World/Cube", (1, 0, 0)) 
 
-        from .UsdMethods.Camera import create_camera_look_at
-        create_camera_look_at("/World/Cube")        
+        # from .UsdMethods.Camera import create_camera_look_at
+        # create_camera_look_at("/World/Cube")        
     def convert(self):
         from .UsdMethods.ConvertToUSD import convert
 
