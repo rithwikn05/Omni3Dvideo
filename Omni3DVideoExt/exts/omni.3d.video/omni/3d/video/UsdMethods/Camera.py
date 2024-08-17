@@ -48,11 +48,14 @@ def create_camera_rotate_around_object_animation(prim_path: str, duration: float
     """
     Create a camera animation that rotates around an object
     """
+    stage = omni.usd.get_context().get_stage()
+    cameraPrim = stage.DefinePrim("/camera", "Camera")
+    stage.DefinePrim(prim_path, "Cube")
 
     #First make the camera look at the prim
     create_camera_look_at(prim_path, angle, distance)
-    stage = omni.usd.get_context().get_stage()
-    cameraPrim = stage.DefinePrim("/camera", "Camera")
+
+    
 
 
 

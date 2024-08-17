@@ -31,7 +31,58 @@ def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple
     xform.AddTranslateOp().Set((0, 0, 0))
     xform.AddOrientOp().Set(Gf.Quatd(1.0))
     xform.AddScaleOp().Set((1, 1, 1))
+
+
+def place_object_on_another_object(bottom_prim_path: str, top_prim_path: str):
+    """
+    Places one prim on top of another
+
+    Args:
+        bottom_prim_path (str): prim on the bottom
+        top_prim_path (str): prim on the top
+    """
+    stage = omni.usd.get_context().get_stage()
+    bottom_prim = stage.DefinePrim(bottom_prim_path, "Cube")
+    top_prim = stage.DefinePrim(top_prim_path, "Sphere")
+
+    bottom_imageable = UsdGeom.Imageable(bottom_prim)
+    bottom_time = Usd.TimeCode.Default() # The time at which we compute the bounding box
+    bottom_bound = bottom_imageable.ComputeWorldBound(bottom_time, UsdGeom.Tokens.default_)
+    bottom_bound_range = bottom_bound.ComputeAlignedBox()
+
+    top_imageable = UsdGeom.Imageable(bottom_prim)
+    top_time = Usd.TimeCode.Default() # The time at which we compute the bounding box
+    top_bound = top_imageable.ComputeWorldBound(top_time, UsdGeom.Tokens.default_)
+    top_bound_range = top_bound.ComputeAlignedBox()
+
+    min_bottom_location_vec = bottom_bound_range.GetMin()
+    max_bottom_location_vec = bottom_bound_range.GetMax()
+
+    min_top_location_vec = top_bound_range.GetMin()
+    max_top_location_vec = top_bound_range.GetMax()
+
+    displacement_height = (max_top_location_vec[1] - min_top_location_vec[1]) / 2
+
+    translate_location_vec = Gf.Vec3d((max_bottom_location_vec[0] + min_bottom_location_vec[0]) / 2, max_bottom_location_vec[1] + displacement_height, (max_bottom_location_vec[2] + min_bottom_location_vec[2]) / 2)
+
+    xformable_top_prim = UsdGeom.Xformable(top_prim)
+    xformable_top_prim.SetXformOpOrder([])
+    xformable_top_prim = xformable_top_prim.AddTranslateOp().Set(translate_location_vec)
+
+def focus_on_prim(prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+    stage = omni.usd.get_context().get_stage()
+    prim = stage.DefinePrim(prim_path, "Cube")
+
+
     
+
+
 
 # class createAssets:
 #     def __init__(self):
