@@ -32,21 +32,21 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     print("attr_path:", attr_path)
      # Ensure the prim is a Xformable
     xformable = UsdGeom.Xformable(prim)
-
-    if not "xformOp:translate" in prim.GetAttributes:
-        xformable = xformable.AddTranslateOp()
-    if not "xformOp:rotate" in prim.GetAttributes: 
-        xformable = xformable.AddRotateXYZOp()
-    if not "xformOp:scale" in prim.GetAttributes: 
-        xformable = xformable.AddScaleOp()
-
-    # # Add transform operations if they don't exist
-    # if attr_path == "xformOp:translate":
+    xformable.SetXformOpOrder([])
+    # if not "xformOp:translate" in prim.GetAttributes:
     #     xformable = xformable.AddTranslateOp()
-    # elif attr_path == "xformOp:rotate":
+    # if not "xformOp:rotateXYZ" in prim.GetAttributes: 
     #     xformable = xformable.AddRotateXYZOp()
-    # elif attr_path == "xformOp:scale":
+    # if not "xformOp:scale" in prim.GetAttributes: 
     #     xformable = xformable.AddScaleOp()
+
+    # Add transform operations if they don't exist
+    if attr_path == "xformOp:translate":
+        xformable = xformable.AddTranslateOp()
+    elif attr_path == "xformOp:rotateXYZ":
+        xformable = xformable.AddRotateXYZOp()
+    elif attr_path == "xformOp:scale":
+        xformable = xformable.AddScaleOp()
     
     
     print(attr_path_and_component)
@@ -63,6 +63,7 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     current_value = Gf.Vec3f(value, value, value)
 
     # Set the keyframe
+    xformable.Set(Gf.Vec3f(0.0, 0.0, 0.0), 0)
     xformable.Set(current_value, Usd.TimeCode(time))
 
     # xformable.SetXformOpOrder([])

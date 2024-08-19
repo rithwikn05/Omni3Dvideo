@@ -3,6 +3,7 @@ from pxr import Usd, Sdf
 from typing import Optional, List, Tuple
 import omni.usd
 from pxr import UsdGeom, Gf
+from omni.kit.viewport.utility import get_active_viewport, frame_viewport_selection
 
 
 def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple[float], scale: Tuple[float], rotation: Tuple[float]) -> None:
@@ -33,7 +34,7 @@ def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple
     xform.AddScaleOp().Set((1, 1, 1))
 
 
-def place_object_on_another_object(bottom_prim_path: str, top_prim_path: str):
+def place_object_on_another_object(stage, bottom_prim_path: str, top_prim_path: str):
     """
     Places one prim on top of another
 
@@ -41,14 +42,27 @@ def place_object_on_another_object(bottom_prim_path: str, top_prim_path: str):
         bottom_prim_path (str): prim on the bottom
         top_prim_path (str): prim on the top
     """
-    stage = omni.usd.get_context().get_stage()
-    bottom_prim = stage.DefinePrim(bottom_prim_path, "Cube")
-    top_prim = stage.DefinePrim(top_prim_path, "Sphere")
+    if not stage.GetPrimAtPath(bottom_prim_path):
+        print("In if bottom_prim_path")
+        bottom_prim = stage.DefinePrim(bottom_prim_path, "Cube")
+    else:
+        print("In else bottom_prim_path")
+        bottom_prim = stage.GetPrimAtPath(bottom_prim_path)
+        print(bottom_prim)
+
+    if not stage.GetPrimAtPath(top_prim_path):
+        print("In if top_prim_path")
+        top_prim = stage.DefinePrim(top_prim_path, "Sphere")
+    else:
+        print("In else top_prim_path")
+        top_prim = stage.GetPrimAtPath(top_prim_path)
 
     bottom_imageable = UsdGeom.Imageable(bottom_prim)
     bottom_time = Usd.TimeCode.Default() # The time at which we compute the bounding box
     bottom_bound = bottom_imageable.ComputeWorldBound(bottom_time, UsdGeom.Tokens.default_)
     bottom_bound_range = bottom_bound.ComputeAlignedBox()
+
+    print(bottom_bound_range)
 
     top_imageable = UsdGeom.Imageable(bottom_prim)
     top_time = Usd.TimeCode.Default() # The time at which we compute the bounding box
@@ -69,18 +83,53 @@ def place_object_on_another_object(bottom_prim_path: str, top_prim_path: str):
     xformable_top_prim.SetXformOpOrder([])
     xformable_top_prim = xformable_top_prim.AddTranslateOp().Set(translate_location_vec)
 
-def focus_on_prim(prim_path: str):
+def focus_on_prim(stage, prim_path: str):
     """
     Focuses on the prim specified
 
     Args:
         prim_path (str): prim which should be focused on
     """
-    stage = omni.usd.get_context().get_stage()
-    prim = stage.DefinePrim(prim_path, "Cube")
+    # stage = omni.usd.get_context().get_stage()
+    # prim = stage.DefinePrim(prim_path, "Cube")
+    # camera = stage.DefinePrim("/camera", "Camera")
 
+    # ctx = omni.usd.get_context()
+    # # The second arg is unused. Any boolean can be used.
+    # ctx.get_selection().set_selected_prim_paths(["/New_Stage/ref_prim"], True)
+    # frame_viewport_selection(active_viewport)
 
+    viewport_window = omni.kit.viewport.utility.get_active_viewport_window()
+    viewport_api = viewport_window.viewport_api
+    selection = viewport_api.usd_context.get_selection()
+
+    selection.set_selected_prim_paths([prim_path], True)
     
+    # frame to the selection
+    omni.kit.viewport.utility.frame_viewport_selection(viewport_api=viewport_api, padding = 1.5)
+
+    omni.kit.commands.execute("DuplicateViewportCameraCommand", viewport_api=viewport_api)
+
+
+
+
+
+
+
+
+#  select cube1
+# 	        selection.set_selected_prim_paths(["/cube1"], True)
+# 	        # frame to the selection
+# 	        omni.kit.viewport.utility.frame_viewport_selection(viewport_api=viewport_api)
+
+# 	selection = viewport_api.usd_context.get_selection()
+
+# 	viewport_api = viewport_window.viewport_api
+
+# 	viewport_window = omni.kit.viewport.utility.get_active_viewport_window()
+
+
+# 	omni.kit.commands.execute("DuplicateViewportCameraCommand", viewport_api=viewport_api)
 
 
 

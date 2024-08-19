@@ -47,6 +47,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 ui.Button("debug2", height = 20, clicked_fn=self.debug2)
                 # ui.Button("convert", height = 20, clicked_fn=self.convert)
                 ui.Button("generate", height = 20, clicked_fn=self.run_gpt_generated_code)
+                ui.Button("build_animation", height = 20, clicked_fn=self.build_animation)
+
 
     def on_shutdown(self):
         print("[omni.3d.video] omni 3d video shutdown")
@@ -158,4 +160,16 @@ class Omni3dVideoExtension(omni.ext.IExt):
         omniverse_code = read_parsed_code("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
         code = get_code_from_gpt("battery", omniverse_code)
         # print(code)
-    
+
+    def build_animation(self):
+        from .UsdMethods.CreateGeometry import place_object_on_another_object, focus_on_prim
+        from .UsdMethods.Animation import create_rotation_animation, keyframe, create_scale_animation
+        stage = omni.usd.get_context().get_stage()
+
+        # focus_on_prim(stage, "/New_Stage/ref_prim")
+
+        # place_object_on_another_object(stage, "/World/Cube", "/World/Sphere")
+        keyframe("/World/Cube", "/World/Cube.xformOp:scale|x", 30.0, 2.0)
+        # create_scale_animation("/World/Cube", 20, "Z", 270)
+        # create_scale_animation("/World/Cube", 1, 5.0)
+        # place_object_on_another_object("/World/Cube", "/World/Sphere")
