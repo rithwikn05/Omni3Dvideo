@@ -82,25 +82,22 @@ def create_camera_rotate_around_object_animation(prim_path: str, duration: float
     up_direction = Gf.Vec3d(0, 1, 0)
     timeline.pause()
 
-    camera = Gf.Camera()
-    # camera.SetPerspectiveFromAspectRatioAndFieldOfView(1.78, 60, Gf.Camera.FOVDirection.FOVVertical)
-
-
     for current_time in np.arange(start_time, end, 1/frames_per_second):#int(start_time * frames_per_second), int(end * frames_per_second)):
         rotation_angle_radians = math.radians(angle * ((current_time - start_time) / duration))
 
         new_z_dist = distance * math.cos(rotation_angle_radians)      
         new_y_dist = distance * math.sin(rotation_angle_radians)
 
-        new_translation = Gf.Vec3f(translate[0], translate[1] + new_y_dist, translate[2] + new_z_dist)
+        new_translation = Gf.Vec3d(translate[0], translate[1] + new_y_dist, translate[2] + new_z_dist)
         print(new_translation)
         # print(up_direction)
         # new_rotation = Gf.Quatf(math.cos(rotation_angle_radians / 2), axis[0] * math.sin(rotation_angle_radians / 2), axis[1] * math.sin(rotation_angle_radians / 2), axis[2] * math.sin(rotation_angle_radians / 2))
         
         look_at = Gf.Matrix4d(1.0)
         print(look_at)
-        look_at = look_at.SetLookAt(new_translation, translate, up_direction)
+        look_at = look_at.SetLookAt(new_translation, translate, up_direction)       
         new_rotation = look_at.ExtractRotation().GetQuat()
+        new_rotation = Gf.Quatf(new_rotation)
 
         timeline.set_current_time(current_time)
 
