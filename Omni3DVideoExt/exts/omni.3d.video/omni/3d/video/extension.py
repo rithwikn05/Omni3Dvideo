@@ -28,6 +28,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.prompt_field = ""
+        self.prompt = ""
 
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
@@ -39,11 +40,18 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self._window = ui.Window("Omni3DVideo Debug Window", width=300, height=300)
         with self._window.frame:
             with ui.VStack():
+
+                def _generate():
+                    self.prompt = self.prompt_field.name
+                    print(self.prompt)
+
                 label = ui.Label("Debug Window", height = 20)
                 with ui.HStack(height = ui.Percent(20)):
                     ui.Label("Prompt", width = 70)
-                    self.prompt_field = ui.StringField(multiline = True)
+                    self.prompt_field = ui.StringField(multiline = True)    
+                    self.prompt = self.prompt_field.name
                 # ui.Button("debug", height = 20, clicked_fn=self.debug)
+                ui.Button("read prompt", height = 20, clicked_fn=_generate)
                 ui.Button("debug2", height = 20, clicked_fn=self.debug2)
                 # ui.Button("convert", height = 20, clicked_fn=self.convert)
                 ui.Button("generate", height = 20, clicked_fn=self.run_gpt_generated_code)
@@ -121,15 +129,16 @@ class Omni3dVideoExtension(omni.ext.IExt):
         
         # from .UsdMethods.Camera import create_camera_look_at
         # create_camera_look_at("/World/Cube")
+        stage = omni.usd.get_context().get_stage()
 
-        # from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
+        from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
 
         # create_scale_animation("/World/Cube", 15.0, 8.0)
 
-        from .UsdMethods.CreateGeometry import place_object_on_another_object
-        place_object_on_another_object("/World/Cube", "/World/Sphere")
+        # from .UsdMethods.CreateGeometry import place_object_on_another_object
+        # place_object_on_another_object("/World/Cube", "/World/Sphere")
 
-        # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 5.0, 50.0)
+        keyframe(stage, "/World/Cube", "/World/Cube.xformOp:scale|x", 5.0, 50.0)
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
         # create_scale_animation("/World/Cube", 500, 2.0)
@@ -164,12 +173,17 @@ class Omni3dVideoExtension(omni.ext.IExt):
     def build_animation(self):
         from .UsdMethods.CreateGeometry import place_object_on_another_object, focus_on_prim
         from .UsdMethods.Animation import create_rotation_animation, keyframe, create_scale_animation
+        from .UsdMethods.Camera import create_camera_rotate_around_object_animation
         stage = omni.usd.get_context().get_stage()
 
+        # prompt = self.prompt_field.get_value_as_string()
+        print("self.prompt: ", self.prompt)
+
+        create_camera_rotate_around_object_animation("/World/Cube", 30)
         # focus_on_prim(stage, "/New_Stage/ref_prim")
 
         # place_object_on_another_object(stage, "/World/Cube", "/World/Sphere")
-        keyframe("/World/Cube", "/World/Cube.xformOp:scale|x", 30.0, 2.0)
+        # keyframe(stage, "/World/Cube", "/World/Cube.xformOp:scale|x", 30.0, 2.0)
         # create_scale_animation("/World/Cube", 20, "Z", 270)
         # create_scale_animation("/World/Cube", 1, 5.0)
-        # place_object_on_another_object("/World/Cube", "/World/Sphere")
+        # place_object_on_another_object(stage, "/World/Cube", "/World/Sphere")

@@ -99,3 +99,20 @@ def get_code_from_gpt(prompt, omniverse_code):
     #         code = "No code or content was generated."
 
     # Remove comments and empty lines
+
+
+
+
+
+    ## select cube1
+        # selection.set_selected_prim_paths(["/cube1"], True)
+        # frame to the selection
+#         omni.kit.viewport.utility.frame_viewport_selection(viewport_api=viewport_api)
+# selection = viewport_api.usd_context.get_selection()
+# viewport_api = viewport_window.viewport_api
+# viewport_window = omni.kit.viewport.utility.get_active_viewport_window()
+
+
+# def focus_on_selected_prim
+
+# omni.kit.commands.execute("DuplicateViewportCameraCommand", viewport_api=viewport_api)

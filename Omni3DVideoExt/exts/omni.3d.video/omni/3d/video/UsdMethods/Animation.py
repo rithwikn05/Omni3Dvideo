@@ -3,7 +3,7 @@ from pxr import Usd, Sdf, Gf, UsdGeom
 import math
 
 
-def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> None:
+def keyframe(stage, prim_path: str, attribute_path: str, time: float, value: float) -> None:
     """
     Keyframe an attribute of a prim at a time with a value
 
@@ -13,7 +13,6 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
         time (float): the time to keyframe
         value (float): the value to keyframe
     """
-    stage = omni.usd.get_context().get_stage()
     stage.DefinePrim(prim_path, "Cube")
 
     # Get the prim
@@ -43,10 +42,33 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     # Add transform operations if they don't exist
     if attr_path == "xformOp:translate":
         xformable = xformable.AddTranslateOp()
+        if attr_component == "x":
+            current_value = Gf.Vec3f(value, 0, 0)
+        elif attr_component == "y":
+            current_value = Gf.Vec3f(0, value, 0)
+        else:
+            current_value = Gf.Vec3f(0, 0, value)
+
     elif attr_path == "xformOp:rotateXYZ":
         xformable = xformable.AddRotateXYZOp()
+        if attr_component == "x":
+            axis = Gf.Vec3d(1, 0, 0).GetNormalized()
+            Gf.Quatf(math.cos(value / 2), axis[0] * math.sin(value / 2), axis[1] * math.sin(value / 2), axis[2] * math.sin(value / 2))
+        elif attr_component == "y":
+            axis = Gf.Vec3d(0, 1, 0).GetNormalized()
+            Gf.Quatf(math.cos(value / 2), axis[0] * math.sin(value / 2), axis[1] * math.sin(value / 2), axis[2] * math.sin(value / 2))
+        else:
+            axis = Gf.Vec3d(0, 0, 1).GetNormalized()
+            Gf.Quatf(math.cos(value / 2), axis[0] * math.sin(value / 2), axis[1] * math.sin(value / 2), axis[2] * math.sin(value / 2))
+            
     elif attr_path == "xformOp:scale":
         xformable = xformable.AddScaleOp()
+        if attr_component == "x":
+            current_value = Gf.Vec3f(value, 0, 0)
+        elif attr_component == "y":
+            current_value = Gf.Vec3f(0, value, 0)
+        else:
+            current_value = Gf.Vec3f(0, 0, value)
     
     
     print(attr_path_and_component)
@@ -63,12 +85,16 @@ def keyframe(prim_path: str, attribute_path: str, time: float, value: float) -> 
     current_value = Gf.Vec3f(value, value, value)
 
     # Set the keyframe
-    xformable.Set(Gf.Vec3f(0.0, 0.0, 0.0), 0)
-    xformable.Set(current_value, Usd.TimeCode(time))
+    if attr_path == "xformOp:translate" or "xformOp:scale":
+        xformable.Set(Gf.Vec3f(0.0, 0.0, 0.0), 0)
+        xformable.Set(current_value, Usd.TimeCode(time))
+    else:
+        xformable.Set(Gf.Quatf(0.0, 0.0, 0.0, 0.0), 0)
+        xformable.Set(current_value, Usd.TimeCode(time))
 
     # xformable.SetXformOpOrder([])
     
-def create_movement_animation(prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
+def create_movement_animation(stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
     """
     Create a movement animation for a prim
 
@@ -78,7 +104,6 @@ def create_movement_animation(prim_path: str, duration: float, direction: str = 
         direction (str): the direction to move
         distance (float): the distance to move
     """
-    stage = omni.usd.get_context().get_stage()
     stage.DefinePrim(prim_path, "Cube")
     prim_object = stage.GetPrimAtPath(prim_path)
 
@@ -102,7 +127,7 @@ def create_movement_animation(prim_path: str, duration: float, direction: str = 
     xformable_object.Set(end_position, duration)
 
     
-def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
+def create_rotation_animation(stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
     """
     Create a 360 degree rotation animation for a prim
 
@@ -111,7 +136,6 @@ def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", 
         duration (float): the duration of the animation
         axis (str): the axis to rotate
     """
-    stage = omni.usd.get_context().get_stage()
     stage.DefinePrim(prim_path, "Cube")
     prim_object = stage.GetPrimAtPath(prim_path)
 
@@ -133,7 +157,7 @@ def create_rotation_animation(prim_path: str, duration: float, axis: str = "Y", 
     xformable_prim.Set(Gf.Quatf(0.0, 0.0, 0.0, 0.0), 0)
     xformable_prim.Set(new_angle, duration)
 
-def create_scale_animation(prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
+def create_scale_animation(stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
     """
     Create a scale animation for a prim
 
@@ -142,8 +166,6 @@ def create_scale_animation(prim_path: str, duration: float, scale_ratio: float =
         duration (float): the duration of the animation
         scale_ratio (float): the scale ratio
     """
-
-    stage = omni.usd.get_context().get_stage()
     stage.DefinePrim(prim_path, "Cube")
     prim_object = stage.GetPrimAtPath(prim_path)
 
