@@ -49,7 +49,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 with ui.HStack(height = ui.Percent(20)):
                     ui.Label("Prompt", width = 70)
                     self.prompt_field = ui.StringField(multiline = True)    
-                    self.prompt = self.prompt_field.name
+                    self.prompt = self.prompt_field.model.get_value_as_string()
                 # ui.Button("debug", height = 20, clicked_fn=self.debug)
                 ui.Button("read prompt", height = 20, clicked_fn=_generate)
                 ui.Button("debug2", height = 20, clicked_fn=self.debug2)
@@ -129,16 +129,16 @@ class Omni3dVideoExtension(omni.ext.IExt):
         
         # from .UsdMethods.Camera import create_camera_look_at
         # create_camera_look_at("/World/Cube")
-        stage = omni.usd.get_context().get_stage()
+        # stage = omni.usd.get_context().get_stage()
 
         from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
 
-        # create_scale_animation("/World/Cube", 15.0, 8.0)
+        # # create_scale_animation("/World/Cube", 15.0, 8.0)
 
-        # from .UsdMethods.CreateGeometry import place_object_on_another_object
-        # place_object_on_another_object("/World/Cube", "/World/Sphere")
+        # # from .UsdMethods.CreateGeometry import place_object_on_another_object
+        # # place_object_on_another_object("/World/Cube", "/World/Sphere")
 
-        keyframe(stage, "/World/Cube", "/World/Cube.xformOp:scale|x", 5.0, 50.0)
+        # keyframe(stage, "/World/Cube", "/World/Cube.xformOp:scale|x", 5.0, 50.0)
         # keyframe("/World/Cube", "/World/Cube.xformOp:translate|x", 100.0, 100.0)
 
         # create_scale_animation("/World/Cube", 500, 2.0)
