@@ -55,7 +55,6 @@ def create_camera_rotate_around_object_animation(prim_path: str, duration: float
     cameraPrim = stage.DefinePrim("/camera", "Camera")
     prim = stage.DefinePrim(prim_path, "Cube")
 
-    axis = Gf.Vec3d(1, 0, 0).GetNormalized()
     timeline = get_timeline_interface()
 
     camera_xformable = UsdGeom.Xformable(cameraPrim)
@@ -80,7 +79,7 @@ def create_camera_rotate_around_object_animation(prim_path: str, duration: float
     end = start_time + (duration * frames_per_second)
 
     # new_translation = translation_position
-    # up_direction = Gf.Vec3d(0, 1, 0)
+    up_direction = Gf.Vec3d(0, 1, 0)
     timeline.pause()
 
     camera = Gf.Camera()
@@ -98,22 +97,15 @@ def create_camera_rotate_around_object_animation(prim_path: str, duration: float
         # print(up_direction)
         # new_rotation = Gf.Quatf(math.cos(rotation_angle_radians / 2), axis[0] * math.sin(rotation_angle_radians / 2), axis[1] * math.sin(rotation_angle_radians / 2), axis[2] * math.sin(rotation_angle_radians / 2))
         
-        # look_at = Gf.Matrix4d(1.0)
-        # print(look_at)
-        # look_at = look_at.SetLookAt(new_translation, translate, up_direction)
-        # new_rotation = look_at.ExtractRotation().GetQuat()
-
-        camera.SetTransform(Gf.Transform().SetRotation(Gf.Rotation(Gf.Vec3d(0, 1, 0), rotation_angle_radians)).SetTranslation(new_translation))
-
-        view_matrix = camera.GetTransform().GetInverse()
-
-        translation = view_matrix.ExtractTranslation()
-        rotation = view_matrix.ExtractRotation()
+        look_at = Gf.Matrix4d(1.0)
+        print(look_at)
+        look_at = look_at.SetLookAt(new_translation, translate, up_direction)
+        new_rotation = look_at.ExtractRotation().GetQuat()
 
         timeline.set_current_time(current_time)
 
-        translate_op.Set(translation)
-        orient_op.Set(rotation)
+        translate_op.Set(new_translation)
+        orient_op.Set(new_rotation)
         
     timeline.set_auto_update(True)
     timeline.set_start_time(start_time)
