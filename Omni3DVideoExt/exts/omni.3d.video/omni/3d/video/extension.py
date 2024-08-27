@@ -171,15 +171,17 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # print(code)
 
     def build_animation(self):
-        from .UsdMethods.CreateGeometry import place_object_on_another_object, focus_on_prim
-        from .UsdMethods.Animation import create_rotation_animation, keyframe, create_scale_animation
-        from .UsdMethods.Camera import create_camera_rotate_around_object_animation
-        stage = omni.usd.get_context().get_stage()
+        # from .UsdMethods.CreateGeometry import place_object_on_another_object, focus_on_prim
+        # from .UsdMethods.Animation import create_rotation_animation, keyframe, create_scale_animation
+        # from .UsdMethods.Camera import create_camera_rotate_around_object_animation
+        # stage = omni.usd.get_context().get_stage()
 
-        # prompt = self.prompt_field.get_value_as_string()
-        print("self.prompt: ", self.prompt)
+        # # prompt = self.prompt_field.get_value_as_string()
+        # print("self.prompt: ", self.prompt)
 
-        create_camera_rotate_around_object_animation("/World/Cube", 30)
+        # create_camera_rotate_around_object_animation("/World/Cube", 30)
+
+
         # focus_on_prim(stage, "/New_Stage/ref_prim")
 
         # place_object_on_another_object(stage, "/World/Cube", "/World/Sphere")
@@ -187,3 +189,6 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # create_scale_animation("/World/Cube", 20, "Z", 270)
         # create_scale_animation("/World/Cube", 1, 5.0)
         # place_object_on_another_object(stage, "/World/Cube", "/World/Sphere")
+
+        from .UsdMethods.CameraAnimation import camera_zoom_in
+        camera_zoom_in("/World/Cameras/CamLobbyWide", 2.0, 3)

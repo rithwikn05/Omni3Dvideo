@@ -1,5 +1,23 @@
 We will be documenting our research on text-to-video generation
 
+# Generating Video:
+1. MTurker labeling data:
+- Video, Description, Rating
+e.g. .mp4, I want a cube rotate by 260 degree horizontally?
+- Rating:
+  - Is this video describing the .... [Yes, No]
+  - Quality of video: how the quality of the video
+
+Main Table: 
+[Ours] ChatGPT, GPT4o(mini), LLama3.1 | Stability AI, Runaway, Pica, ...
+
+*(not right now)
+Compare something deeper about the generating methods
+- Efficiency
+- Variant (Conditional generating/Editing)
+- Objects scene supported (drawback)
+
+
 # USDMethods
 
 - Import Assets
