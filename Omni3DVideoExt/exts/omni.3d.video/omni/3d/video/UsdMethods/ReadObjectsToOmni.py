@@ -75,7 +75,7 @@ def string_to_function_call(func_string, prompt):
         raise ValueError(f"Function '{func_name}' not found")
     
     # Call the function
-    return func(f"/World/perspectivecamera", *kwargs.values())
+    return func(f"/perspectivecamera", *kwargs.values())
 
 def import_asset(prompt) -> str:
     """

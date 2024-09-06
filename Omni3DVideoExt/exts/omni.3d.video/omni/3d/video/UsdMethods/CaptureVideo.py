@@ -20,9 +20,32 @@ def setup_viewport():
     viewport_api.resolution = (1280, 720)  # You can adjust this as needed
 
     # Set the camera path
-    viewport_api.camera_path = '/World/perspectivecamera'  # Adjust this to match your scene's camera path
+    viewport_api.camera_path = '/perspectivecamera'  # Adjust this to match your scene's camera path
     print("in here")
     return viewport_api, viewport_widget, viewport_window
+
+def find_shortest_camera_path(stage):
+    # List to store all camera paths
+    camera_paths = []
+
+    # Traverse the stage and find all camera prims
+    for prim in stage.Traverse():
+        if prim.GetTypeName() == "Camera":
+            camera_paths.append(str(prim.GetPath()))
+
+    print("Available cameras:")
+    for path in camera_paths:
+        print(f"- {path}")
+
+    # If there are no cameras, return None
+    if not camera_paths:
+        print("No cameras found in the scene.")
+        return None
+
+    # Find the camera with the shortest path
+    shortest_path = min(camera_paths, key=len)
+    print(f"Selected camera with shortest path: {shortest_path}")
+    return shortest_path
 
 def render_video(viewport_api, output_folder):
     print("[viewport task] start capture")
@@ -65,6 +88,13 @@ def render_video(viewport_api, output_folder):
     else:  # Assume RaytracedLighting
         options.render_preset = omni.kit.capture.viewport.CaptureRenderPreset.RAY_TRACE
 
+
+    stage = omni.usd.get_context().get_stage()
+    shortest_camera_path = find_shortest_camera_path(stage)
+    if shortest_camera_path is None:
+        print("Error: No camera found in the scene. Cannot proceed with capture.")
+        return None
+    
     # Use the viewport we created
     options.viewport = viewport_api
     options.camera_path = viewport_api.camera_path
