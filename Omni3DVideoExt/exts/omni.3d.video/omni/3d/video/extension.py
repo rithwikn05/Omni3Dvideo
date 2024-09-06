@@ -1,6 +1,6 @@
 import omni.ext
 import omni.ui as ui
-from pxr import UsdGeom
+from pxr import UsdGeom, Gf
 import logging
 import omni.kit.pipapi
 # from openai import OpenAI
@@ -56,6 +56,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 # ui.Button("convert", height = 20, clicked_fn=self.convert)
                 ui.Button("generate", height = 20, clicked_fn=self.run_gpt_generated_code)
                 ui.Button("build_animation", height = 20, clicked_fn=self.build_animation)
+                ui.Button("Render Video", height = 20, clicked_fn=self.render_video)
 
 
     def on_shutdown(self):
@@ -171,6 +172,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # print(code)
 
     def build_animation(self):
+        import re
         # from .UsdMethods.CreateGeometry import place_object_on_another_object, focus_on_prim
         # from .UsdMethods.Animation import create_rotation_animation, keyframe, create_scale_animation
         # from .UsdMethods.Camera import create_camera_rotate_around_object_animation
@@ -190,5 +192,36 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # create_scale_animation("/World/Cube", 1, 5.0)
         # place_object_on_another_object(stage, "/World/Cube", "/World/Sphere")
 
-        from .UsdMethods.CameraAnimation import camera_zoom_in
-        camera_zoom_in("/World/Cameras/CamLobbyWide", 2.0, 3)
+        # from .UsdMethods.CameraAnimation import camera_zoom_in, camera_roll, camera_pan, camera_pull_in, camera_push_out
+        # camera_roll("/camera", 30, 3)
+        from .UsdMethods.ReadObjectsToOmni import processing_gpt_calls, parsing_python_scripts, adding_python_scripts, import_asset, string_to_function_call
+        from .UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
+        
+        adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
+        from .UsdMethods.GPTCalls import get_code_from_gpt
+        code = processing_gpt_calls(self.prompt_field.model.get_value_as_string())
+        print(code)
+        
+        print(code)
+        pattern = r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
+    
+        match = re.search(pattern, code, re.DOTALL)
+        if match:
+            subject = match.group(1).strip()
+            method = match.group(2).strip()
+        # if method_match:
+        #     method = method_match.group(1).strip()
+
+        import_asset(subject)
+        
+        string_to_function_call(method, subject)
+
+    
+        # camera_pan("/camera", Gf.Vec2f(15.0, 0.0), 8)
+        # camera_push_out("/camera", 15, 3)
+
+    def render_video(self):
+        from .UsdMethods.CaptureVideo import render_video, setup_viewport
+        output_path = "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods"
+        viewport_api = setup_viewport()
+        render_video = render_video(viewport_api, output_path)

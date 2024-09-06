@@ -1,5 +1,5 @@
 from pathlib import Path
-from pxr import Usd, Gf
+from pxr import Usd, Gf, UsdGeom
 import omni.usd
 from typing import Optional, List, Tuple
 
@@ -71,7 +71,7 @@ def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
     scale_val = prim.GetAttribute("xformOp:scale")
     prim.GetAttribute("xformOp:scale").Set(scale_val*relative_scale_ratio)
 
-def place_prim_on_another(prim_path: str, another_prim_path: str) -> None:
+def place_prim_on_another(stage, bottom_prim_path: str, top_prim_path: str) -> None:
     """
     Place the prim on another prim
 
@@ -81,40 +81,70 @@ def place_prim_on_another(prim_path: str, another_prim_path: str) -> None:
     
     e.g. place "/apple" on "/table"
     """
+    if not stage.GetPrimAtPath(bottom_prim_path):
+        print("In if bottom_prim_path")
+        bottom_prim = stage.DefinePrim(bottom_prim_path, "Cube")
+    else:
+        print("In else bottom_prim_path")
+        bottom_prim = stage.GetPrimAtPath(bottom_prim_path)
+        print(bottom_prim)
 
-    ##  hints
-    # 1 find the bounding box of prim1 
-    # 2 find the bounding box of prim2
-    # 3 put prim2 on prim1
-    # 
-    # Get bounding box from prim
-    #    aabb_min, aabb_max = self.__usd_context.compute_path_world_bounding_box(
-    #        str(self.__prim_path)
-    #    )
+    if not stage.GetPrimAtPath(top_prim_path):
+        print("In if top_prim_path")
+        top_prim = stage.DefinePrim(top_prim_path, "Sphere")
+    else:
+        print("In else top_prim_path")
+        top_prim = stage.GetPrimAtPath(top_prim_path)
 
-    context = omni.usd.get_context()
+    bottom_imageable = UsdGeom.Imageable(bottom_prim)
+    bottom_time = Usd.TimeCode.Default() # The time at which we compute the bounding box
+    bottom_bound = bottom_imageable.ComputeWorldBound(bottom_time, UsdGeom.Tokens.default_)
+    bottom_bound_range = bottom_bound.ComputeAlignedBox()
 
+    print(bottom_bound_range)
 
+    top_imageable = UsdGeom.Imageable(bottom_prim)
+    top_time = Usd.TimeCode.Default() # The time at which we compute the bounding box
+    top_bound = top_imageable.ComputeWorldBound(top_time, UsdGeom.Tokens.default_)
+    top_bound_range = top_bound.ComputeAlignedBox()
 
-# class transform:
-#     def rotate(self, object, rotation):
-#         #rotate along x-axis
-#         object.AddRotateXYZOp().Set(Gf.Vec3d(rotation))
+    min_bottom_location_vec = bottom_bound_range.GetMin()
+    max_bottom_location_vec = bottom_bound_range.GetMax()
 
-#     def scale(self, object, scale):
-#         object.AddScaleOp().Set(scale)  #Scale everything to be 50 units l, w, h
+    min_top_location_vec = top_bound_range.GetMin()
+    max_top_location_vec = top_bound_range.GetMax()
 
-#     def orient(self, object):
-#         orientation = Gf.Quatf(1.0, 0.0, 1.0, 0.0)  # Example quaternion
-#         object.AddOrientOp().Set(orientation)
+    displacement_height = (max_top_location_vec[1] - min_top_location_vec[1]) / 2
 
-#     def translate(self, object, translation):
-#         object.AddTranslateOp().Set(value=translation)  #translate object by how much specified
+    translate_location_vec = Gf.Vec3d((max_bottom_location_vec[0] + min_bottom_location_vec[0]) / 2, max_bottom_location_vec[1] + displacement_height, (max_bottom_location_vec[2] + min_bottom_location_vec[2]) / 2)
 
-# stage = omni.usd.get_context().get_stage()
-# cube = stage.DefinePrim("/cube", "Cube")
-# trans = transform()
-# trans.rotate(cube)
-# trans.scale(cube)
-# trans.orient(cube)
-# trans.translate(cube)
+    xformable_top_prim = UsdGeom.Xformable(top_prim)
+    xformable_top_prim.SetXformOpOrder([])
+    xformable_top_prim = xformable_top_prim.AddTranslateOp().Set(translate_location_vec)
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+    # stage = omni.usd.get_context().get_stage()
+    # prim = stage.DefinePrim(prim_path, "Cube")
+    # camera = stage.DefinePrim("/camera", "Camera")
+
+    # ctx = omni.usd.get_context()
+    # # The second arg is unused. Any boolean can be used.
+    # ctx.get_selection().set_selected_prim_paths(["/New_Stage/ref_prim"], True)
+    # frame_viewport_selection(active_viewport)
+
+    viewport_window = omni.kit.viewport.utility.get_active_viewport_window()
+    viewport_api = viewport_window.viewport_api
+    selection = viewport_api.usd_context.get_selection()
+
+    selection.set_selected_prim_paths([prim_path], True)
+    
+    # frame to the selection
+    omni.kit.viewport.utility.frame_viewport_selection(viewport_api=viewport_api, padding = 1.5)
+
+    omni.kit.commands.execute("DuplicateViewportCameraCommand", viewport_api=viewport_api)
