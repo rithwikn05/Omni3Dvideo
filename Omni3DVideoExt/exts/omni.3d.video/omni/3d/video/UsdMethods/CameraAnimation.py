@@ -4,12 +4,12 @@ from omni.timeline import get_timeline_interface
 import math
 import numpy as np
 
-def create_camera_rotate_around_object_animation(prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+def create_camera_rotate_around_object_animation(camera_path: str, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
     """
     Create a camera animation that rotates around an object
     """
     stage = omni.usd.get_context().get_stage()
-    cameraPrim = stage.DefinePrim("/camera", "Camera")
+    cameraPrim = stage.DefinePrim(camera_path, "Camera")
     prim = stage.DefinePrim(prim_path, "Cube")
 
     timeline = get_timeline_interface()
@@ -77,7 +77,7 @@ def camera_zoom_in(camera_path: str, zoom_ratio: float = 2.0, duration: float = 
     print("in here")
     print("zoom_ratio", zoom_ratio)
     stage = omni.usd.get_context().get_stage()
-    camera = stage.DefinePrim("/camera", "Camera")
+    camera = stage.DefinePrim(camera_path, "Camera")
     camera_xformable = UsdGeom.Xformable(camera)
     camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
 
@@ -100,7 +100,7 @@ def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float =
     #     duration (float): the duration of the animation in seoconds
     """
     stage = omni.usd.get_context().get_stage()
-    camera = stage.DefinePrim("/camera", "Camera")
+    camera = stage.DefinePrim(camera_path, "Camera")
 
     focal_length_attr = camera.GetAttribute("focalLength")
     current_focal_length = focal_length_attr.Get()
@@ -133,11 +133,14 @@ def camera_roll(camera_path: str, roll_angle: float, duration: float = 3):
     
     """
     stage = omni.usd.get_context().get_stage()
-    camera = stage.GetPrimAtPath(camera_path)
+    camera = stage.DefinePrim(camera_path, "Camera")
     axis = Gf.Vec3d(0, 0, 1).GetNormalized()
 
-    rotation_attr = camera.GetAttribute("xformOp:rotateXYZ")
-    current_rotation = rotation_attr.Get()
+    rotation_attr = camera.GetAttribute("xformOp:rotateX")
+    # if not rotation_attr:
+    #     print("here")
+    #     camera = camera.AddAttribute("xformOp:rotateXYZ")
+    current_rotation = rotation_attr.Get()  
     
     print(current_rotation)
     if current_rotation is None:
@@ -155,7 +158,7 @@ def camera_pull_in(camera_path: str, pull_distance: float, duration: float = 3):
     
     """
     stage = omni.usd.get_context().get_stage()
-    camera = stage.DefinePrim("/camera", "Camera")
+    camera = stage.DefinePrim(camera_path, "Camera")
     camera_xformable = UsdGeom.Xformable(camera)
     camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
 
@@ -173,7 +176,7 @@ def camera_push_out(camera_path: str, push_distance: float, duration: float = 3)
     
     """
     stage = omni.usd.get_context().get_stage()
-    camera = stage.DefinePrim("/camera", "Camera")
+    camera = stage.DefinePrim(camera_path, "Camera")
     camera_xformable = UsdGeom.Xformable(camera)
     camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
 

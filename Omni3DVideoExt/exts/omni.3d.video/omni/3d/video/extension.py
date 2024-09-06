@@ -133,6 +133,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # stage = omni.usd.get_context().get_stage()
 
         from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
+        from .UsdMethods.CameraAnimation import camera_roll
+        camera_roll("/camera", 120, 5)
 
         # # create_scale_animation("/World/Cube", 15.0, 8.0)
 
@@ -223,5 +225,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
     def render_video(self):
         from .UsdMethods.CaptureVideo import render_video, setup_viewport
         output_path = "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods"
-        viewport_api = setup_viewport()
-        render_video = render_video(viewport_api, output_path)
+        viewport_api, viewport_widget, viewport_window = setup_viewport()
+        render_video(viewport_api, output_path)
+        viewport_widget.destroy()
+        viewport_window.destroy()

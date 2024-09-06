@@ -65,7 +65,7 @@ def string_to_function_call(func_string, prompt):
                 kwargs[key.strip()] = ast.literal_eval(value.strip())
             else:
                 if args == "camera_path: str":
-                    print("in else statement appending prompt path")
+                    print(f"/New_Stage/{prompt}")
                     args.append(f"/New_Stage/{prompt}")
     print("args", args)
     print("kwargs", kwargs)
@@ -75,7 +75,7 @@ def string_to_function_call(func_string, prompt):
         raise ValueError(f"Function '{func_name}' not found")
     
     # Call the function
-    return func(f"/New_Stage/{prompt}", *kwargs.values())
+    return func(f"/World/perspectivecamera", *kwargs.values())
 
 def import_asset(prompt) -> str:
     """
