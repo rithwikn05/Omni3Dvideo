@@ -29,6 +29,10 @@ def get_code_from_gpt(prompt, omniverse_code):
                     "content": f"You are a coding assistant specialized in understanding natural language instructions and mapping them to specific programming methods. Given a list of available methods, your task is to accurately identify the action to perform, the subject of the action, and determine the most appropriate method to call."
                 },
                 {
+                    "role": "assistant",
+                    "content": ""
+                },
+                {
                     "role": "user",
                     "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify the action to be performed (e.g., zoom, pan). 2. Identify the subject of the action (e.g., battery, screen). 3. Match the identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the identified action, subject, and corresponding method in your response all in seperate lines."
                 }

@@ -1,0 +1,60 @@
+def object_roll(camera_path: str, roll_angle: float, duration: float = 3):
+    """
+    
+    """
+    stage = omni.usd.get_context().get_stage()
+    camera = stage.DefinePrim(camera_path, "Camera")
+    axis = Gf.Vec3d(0, 0, 1).GetNormalized()
+    camera_xformable = UsdGeom.Xformable(camera)
+    camera_xformable.AddRotateXYZOp().Set(Gf.Vec3d(0, 0, 50))
+    
+    rotation_attr = camera.GetAttribute("xformOp:rotateXYZ")
+
+    current_rotation = rotation_attr.Get()  
+    
+    print(current_rotation)
+    if current_rotation is None:
+        new_rotation = Gf.Vec3d(axis[0] * roll_angle, axis[1] * roll_angle, axis[2] * roll_angle)
+        rotation_attr.Set(value = Gf.Vec3d(0, 0, 0), time = 0)
+    else:
+        new_rotation = Gf.Vec3d(current_rotation[0] + axis[0] * roll_angle, current_rotation[1] + axis[1] * roll_angle, current_rotation[1] + axis[2] * roll_angle)
+        rotation_attr.Set(value = current_rotation, time = 0)
+
+    end_time = duration * stage.GetFramesPerSecond()
+    rotation_attr.Set(value = new_rotation, time = end_time)
+
+def object_translate_forward(camera_path: str, pull_distance: float, duration: float = 3):
+    """
+    
+    """
+    stage = omni.usd.get_context().get_stage()
+    camera = stage.DefinePrim(camera_path, "Camera")
+    camera_xformable = UsdGeom.Xformable(camera)
+    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(50, 50, 5000))
+
+    translation_attr = camera.GetAttribute("xformOp:translate")
+    current_translation = translation_attr.Get()
+    new_translation = current_translation + Gf.Vec3d(0, 0, pull_distance)
+
+    translation_attr.Set(value=current_translation, time=0)
+
+    end_time = duration * stage.GetFramesPerSecond()
+    translation_attr.Set(value=new_translation, time=end_time)
+
+def object_translate_backward(camera_path: str, push_distance: float, duration: float = 3):
+    """
+    
+    """
+    stage = omni.usd.get_context().get_stage()
+    camera = stage.DefinePrim(camera_path, "Camera")
+    camera_xformable = UsdGeom.Xformable(camera)
+    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(50, 50, 5000))
+
+    translation_attr = camera.GetAttribute("xformOp:translate")
+    current_translation = translation_attr.Get()
+    new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
+
+    translation_attr.Set(value=current_translation, time=0)
+
+    end_time = duration * stage.GetFramesPerSecond()
+    translation_attr.Set(value=new_translation, time=end_time)

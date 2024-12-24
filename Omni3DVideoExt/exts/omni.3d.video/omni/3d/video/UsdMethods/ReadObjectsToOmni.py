@@ -7,7 +7,11 @@ import omni.usd
 import ast
 
 from ..utils import get_extension_path
-from ..UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
+# from ..UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
+from ..UsdMethods.Material import apply_texture_from_file
+from ..UsdMethods.CreateGeometry import place_object_on_another_object
+
+from ..Omni3DVideo import Omni3DVideo
 """
 1. First user enters the object/objects they want to appear on the scene and what animation they 
 want to happen (ex: rotate camera around the object)
@@ -44,9 +48,10 @@ def adding_python_scripts(txt_file_path: str):
 
 def string_to_function_call(func_string, prompt):
     # Extract function name and arguments
+
     match = re.match(r'(\w+)\((.*)\)', func_string)
     if not match:
-        raise ValueError("Invalid function string format")
+        raise ValueError(f"Invalid function string format, match: {match}")
     
     func_name, args_string = match.groups()
     
@@ -70,12 +75,12 @@ def string_to_function_call(func_string, prompt):
     print("args", args)
     print("kwargs", kwargs)
     # Get the function from globals()
-    func = globals().get(func_name)
+    func = getattr(Omni3DVideo, func_name)
     if not func:
         raise ValueError(f"Function '{func_name}' not found")
     
     # Call the function
-    return func(f"/perspectivecamera", *kwargs.values())
+    return func(*kwargs.values())
 
 def import_asset(prompt) -> str:
     """
@@ -95,25 +100,93 @@ def import_asset(prompt) -> str:
                   region_name=region_name)
 
     bucket_name = "omni3dvideo"
+    prefix = f"Assets/{prompt}"
+    response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
 
-    object = prompt
-    s3_path = f"{object}/{object}_002/Scan/Scan.usd"
-    ext_path = get_extension_path()
-    asset_folder = f"{ext_path}/downloads/{object}"
-    os.makedirs(asset_folder, exist_ok=True)
+    if 'Contents' not in response:
+        print(f"No objects found with prefix '{prefix}'")
 
-    local_path = os.path.join(asset_folder, f"model.usd").replace("\\", "/")
-    print(local_path)
+    for obj in response['Contents']:
+        # Print or return the full S3 URL
+        object_key = obj['Key']
+        s3_url = f"s3://{bucket_name}/{object_key}"
+        break
 
-    if os.path.exists(local_path):
-        print(f"File already exists at {local_path}")
+    s3_object_path = s3_url[len("s3://omni3dvideo/"):]
+    print("s3_object_path", s3_object_path)
+
+    pattern = r"(\w+(?:-\w+)?)/([0-9a-f]+)/model\.usd"
+    match = re.search(pattern, s3_object_path)
+    print("match", match)
+    if match:
+        prompt = match.group(1)
+        hash_value = match.group(2)
+        print(f"Prompt: {prompt}")
+        print(f"Hash: {hash_value}")
     else:
-        s3.download_file(bucket_name, s3_path, local_path)
+        print("No match found")
+
+    # New code to dynamically determine texture path
+    def get_texture_path_from_s3(bucket_name, base_path):
+        texture_prefix = f"{base_path}textures/"
+        response = s3.list_objects_v2(Bucket=bucket_name, Prefix=texture_prefix)
+        
+        for obj in response.get('Contents', []):
+            if obj['Key'].endswith(('_texture0.png', '_texture0.jpg')):
+                return obj['Key']
+        return None
     
+    base_path = f"Assets/{prompt}/{hash_value}/"
+    s3_texture_path = get_texture_path_from_s3(bucket_name, base_path)
+    print("s3_texture_path", s3_texture_path)
+
+    def sanitize_for_filesystem(name: str) -> str:
+        # Replace spaces with hyphens, remove other invalid characters
+        return re.sub(r'[^a-zA-Z0-9-]', '-', name.replace(' ', '-')).lower()
+
+    def sanitize_for_usd(name: str) -> str:
+        # Replace spaces and hyphens with underscores, remove other invalid characters
+        sanitized = re.sub(r'[^a-zA-Z0-9_]', '_', name.replace('-', '_').replace(' ', '_'))
+        # Ensure the name starts with a letter or underscore
+        if not sanitized[0].isalpha() and sanitized[0] != '_':
+            sanitized = '_' + sanitized
+        return sanitized
+
+    filesystem_prompt = sanitize_for_filesystem(prompt)
+    usd_prompt = sanitize_for_usd(prompt)
+        
+    ext_path = get_extension_path()
+    object_asset_folder = f"{ext_path}/downloads/{filesystem_prompt}/models/"
+    texture_asset_folder = f"{ext_path}/downloads/{filesystem_prompt}/textures/"    
+    os.makedirs(object_asset_folder, exist_ok=True) 
+    os.makedirs(texture_asset_folder, exist_ok=True)
+
+    local_object_path = os.path.join(object_asset_folder, f"model.usd").replace("\\", "/")
+    if s3_texture_path:
+        local_texture_path = os.path.join(texture_asset_folder, os.path.basename(s3_texture_path)).replace("\\", "/")
+
+
+    if os.path.exists(local_object_path):
+        print(f"File already exists at {local_object_path}")
+    else:
+        print("downloaded")
+        s3.download_file(bucket_name, s3_object_path, local_object_path)
+    
+    if s3_texture_path:
+        if os.path.exists(local_texture_path):
+            print(f"File already exists at {local_texture_path}")
+        else:
+            print("second download")
+            s3.download_file(bucket_name, s3_texture_path, str(local_texture_path))
+
     #Start of creating a reference for the prim
-    add_reference(local_path, prompt)
+    add_reference(local_object_path, usd_prompt)
+    if s3_texture_path:
+        apply_texture_from_file(f"/New_Stage/{usd_prompt}", local_texture_path)
 
 def add_reference(local_path, prompt):
+
+    print("in add reference")
     # Create new USD stage
     stage: Usd.Stage = omni.usd.get_context().get_stage()
 
@@ -160,13 +233,8 @@ def parsing_python_scripts(file_path, output_file):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    # Pattern to match function definitions and their docstrings, even if docstring is missing
     pattern = r'^\s*def\s+\w+\s*\([^)]*\)\s*(?:->\s*\w+)?\s*:\s*(?:"""[\s\S]*?""")?'
-
-    # Find all matches
     matches = re.findall(pattern, content, re.MULTILINE)
-
-    # Check if output directory exists, if not, create it
     output_dir = os.path.dirname(output_file)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)

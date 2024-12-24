@@ -145,7 +145,7 @@ def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float =
 
 def camera_pan(camera_path: str, pan_distance: Gf.Vec2f, duration: float = 3):
     """
-    
+    Create a camera pan horizontal or vertical animation
     """
 
 
@@ -273,6 +273,1181 @@ def generate_texture(prim_path: str, text: str = "A chubby orange cat riding thr
     Args:
         prim_path (str): the path of the prim to create
         text (str): the description of the texture
+    """
+
+
+
+def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
+    """
+    Apply a texture from an existing JPG file to a prim.
+    
+    Args:
+        prim_path (str): the path of the prim to apply the texture to
+        texture_path (str): the path to the JPG file to use as texture
+    """
+
+    def createMaterialAndTexture(material):
+        
+
+
+
+def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 50)  -> None:
+    """
+    Create a camera at a position and make it look at a point
+
+    Args:
+        prim_path (str): the path of the object to look at
+        angle (float): the angle of the camera 
+        distance (float): the distance of the camera
+    """
+
+
+
+def move_prim(prim_path: str, direction: str, distance: float) -> None:
+    """
+    Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
+   
+    Args:
+        prim_path (str): the path of the prim to move
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+
+def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
+    """
+    Rotate the prim along an axis by some degree
+
+    Args:
+        prim_path (str): the path of the prim to move
+        axis (str): can be x, y, z
+        degree (float): a float suggestion the Euler degree to rotate
+    """
+
+    
+
+def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
+    """
+    Scale the prim by a ratio
+
+    Args:
+        prim_path (str): the path of the prim to move
+        relative_scale_ratio: a float suggestion the scale ratio
+    """
+
+
+def place_prim_on_another(stage, bottom_prim_path: str, top_prim_path: str) -> None:
+    """
+    Place the prim on another prim
+
+    Args:
+        prim_path (str): the path of the prim to move
+        another_prim_path (str): the path of the another prim
+    
+    e.g. place "/apple" on "/table"
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+
+def keyframe(stage, prim_path: str, attribute_path: str, time: float, value: float) -> None:
+    """
+    Keyframe an attribute of a prim at a time with a value
+
+    Args:
+        prim_path (str): the path of the prim to keyframe
+        attribute (str): the attribute to keyframe
+        time (float): the time to keyframe
+        value (float): the value to keyframe
+    """
+
+    
+def create_movement_animation(stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
+    """
+    Create a movement animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        direction (str): the direction to move
+        distance (float): the distance to move
+    """
+
+
+    
+def create_rotation_animation(stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
+    """
+    Create a 360 degree rotation animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        axis (str): the axis to rotate
+    """
+
+
+def create_scale_animation(stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
+    """
+    Create a scale animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        scale_ratio (float): the scale ratio
+    """
+
+
+def create_camera_rotate_around_object_animation(camera_path: str, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+    """
+    Create a camera animation that rotates around an object
+    """
+
+
+def camera_zoom_in(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom in animation
+
+    Args:
+        camera_path (str): the path of the camera
+        zoom_ratio (float): the ratio of the zoom
+        duration (float): the duration of the animation in seoconds
+    """
+
+
+
+def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom out animation
+    # Args:
+    #     camera_path (str): the path of the camera
+    #     zoom_ratio (float): the ratio of the zoom
+    #     duration (float): the duration of the animation in seoconds
+    """
+
+
+def camera_pan(camera_path: str, pan_distance: Gf.Vec2f, duration: float = 3):
+    """
+    Create a camera pan horizontal or vertical animation
+    """
+
+
+
+def camera_roll(camera_path: str, roll_angle: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_pull_in(camera_path: str, pull_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_push_out(camera_path: str, push_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+
+def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple[float], scale: Tuple[float], rotation: Tuple[float]) -> None:
+    """
+    Create a cube prim with specified translation, scale and rotation
+
+    Args:
+        geometry_type (str): the type of geometry to create, can be cube, sphere, plane, cylinder
+        prim_path (str): the path of the prim to create
+        translation (Tuple[float]): a tuple of 3 floats suggestion the translation of the prim
+        scale (Tuple[float]): a tuple of 3 floats suggestion the scale of the prim
+        rotation (Tuple[float]): a tuple of 3 floats suggestion the Euler rotation of the prim
+    """
+
+
+
+def place_object_on_another_object(stage, bottom_prim_path: str, top_prim_path: str):
+    """
+    Places one prim on top of another
+
+    Args:
+        bottom_prim_path (str): prim on the bottom
+        top_prim_path (str): prim on the top
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+def select_prims(prim_paths: List[str]) -> None:
+    """
+    Select prims according to prim paths
+   
+    Args:
+        prim_paths (List[str]): prim paths to select.
+    """
+
+
+def focus_on_selected_prims() -> None:    
+    """
+    Let the viewport camera focus on selected prims
+    """
+
+   
+   
+def hide_selected_prims() -> None:
+    """
+    Hide selected prims in the viewport
+    """
+
+
+def show_selected_prims() -> None:
+    """
+    Make selected prims visiable in the viewport
+    """
+
+
+def only_show_selected_prims() -> None:
+    """
+    Only make selected prims visiable in the viewport
+    """
+
+   
+def show_all_prims() -> None:
+    """
+    Show all prims in the viewport
+    """
+
+   
+def translate_select_prims(direction:str, distance:float) -> None:
+    """
+    Move select prims to a direction by some unit
+   
+    Args:
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
+    """
+    Add a material to a prim with basic color
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        diffuse_color (Tuple[float]): a tuple of RGB floats suggestion the color of the material
+    """
+
+
+
+
+
+
+def generate_texture(prim_path: str, text: str = "A chubby orange cat riding through space, digital art") -> None:
+    """
+    Generate a texture for a prim
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        text (str): the description of the texture
+    """
+
+
+
+def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
+    """
+    Apply a texture from an existing JPG file to a prim.
+    
+    Args:
+        prim_path (str): the path of the prim to apply the texture to
+        texture_path (str): the path to the JPG file to use as texture
+    """
+
+    def createMaterialAndTexture(material):
+        
+
+
+
+def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 50)  -> None:
+    """
+    Create a camera at a position and make it look at a point
+
+    Args:
+        prim_path (str): the path of the object to look at
+        angle (float): the angle of the camera 
+        distance (float): the distance of the camera
+    """
+
+
+
+def move_prim(prim_path: str, direction: str, distance: float) -> None:
+    """
+    Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
+   
+    Args:
+        prim_path (str): the path of the prim to move
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+
+def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
+    """
+    Rotate the prim along an axis by some degree
+
+    Args:
+        prim_path (str): the path of the prim to move
+        axis (str): can be x, y, z
+        degree (float): a float suggestion the Euler degree to rotate
+    """
+
+    
+
+def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
+    """
+    Scale the prim by a ratio
+
+    Args:
+        prim_path (str): the path of the prim to move
+        relative_scale_ratio: a float suggestion the scale ratio
+    """
+
+
+def place_prim_on_another(stage, bottom_prim_path: str, top_prim_path: str) -> None:
+    """
+    Place the prim on another prim
+
+    Args:
+        prim_path (str): the path of the prim to move
+        another_prim_path (str): the path of the another prim
+    
+    e.g. place "/apple" on "/table"
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+
+def keyframe(stage, prim_path: str, attribute_path: str, time: float, value: float) -> None:
+    """
+    Keyframe an attribute of a prim at a time with a value
+
+    Args:
+        prim_path (str): the path of the prim to keyframe
+        attribute (str): the attribute to keyframe
+        time (float): the time to keyframe
+        value (float): the value to keyframe
+    """
+
+    
+def create_movement_animation(stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
+    """
+    Create a movement animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        direction (str): the direction to move
+        distance (float): the distance to move
+    """
+
+
+    
+def create_rotation_animation(stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
+    """
+    Create a 360 degree rotation animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        axis (str): the axis to rotate
+    """
+
+
+def create_scale_animation(stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
+    """
+    Create a scale animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        scale_ratio (float): the scale ratio
+    """
+
+
+def create_camera_rotate_around_object_animation(camera_path: str, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+    """
+    Create a camera animation that rotates around an object
+    """
+
+
+def camera_zoom_in(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom in animation
+
+    Args:
+        camera_path (str): the path of the camera
+        zoom_ratio (float): the ratio of the zoom
+        duration (float): the duration of the animation in seoconds
+    """
+
+
+
+def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom out animation
+    # Args:
+    #     camera_path (str): the path of the camera
+    #     zoom_ratio (float): the ratio of the zoom
+    #     duration (float): the duration of the animation in seoconds
+    """
+
+
+def camera_pan(camera_path: str, pan_distance: Gf.Vec2f, duration: float = 3):
+    """
+    Create a camera pan horizontal or vertical animation
+    """
+
+
+
+def camera_roll(camera_path: str, roll_angle: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_pull_in(camera_path: str, pull_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_push_out(camera_path: str, push_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+
+def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple[float], scale: Tuple[float], rotation: Tuple[float]) -> None:
+    """
+    Create a cube prim with specified translation, scale and rotation
+
+    Args:
+        geometry_type (str): the type of geometry to create, can be cube, sphere, plane, cylinder
+        prim_path (str): the path of the prim to create
+        translation (Tuple[float]): a tuple of 3 floats suggestion the translation of the prim
+        scale (Tuple[float]): a tuple of 3 floats suggestion the scale of the prim
+        rotation (Tuple[float]): a tuple of 3 floats suggestion the Euler rotation of the prim
+    """
+
+
+
+def place_object_on_another_object(stage, bottom_prim_path: str, top_prim_path: str):
+    """
+    Places one prim on top of another
+
+    Args:
+        bottom_prim_path (str): prim on the bottom
+        top_prim_path (str): prim on the top
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+def select_prims(prim_paths: List[str]) -> None:
+    """
+    Select prims according to prim paths
+   
+    Args:
+        prim_paths (List[str]): prim paths to select.
+    """
+
+
+def focus_on_selected_prims() -> None:    
+    """
+    Let the viewport camera focus on selected prims
+    """
+
+   
+   
+def hide_selected_prims() -> None:
+    """
+    Hide selected prims in the viewport
+    """
+
+
+def show_selected_prims() -> None:
+    """
+    Make selected prims visiable in the viewport
+    """
+
+
+def only_show_selected_prims() -> None:
+    """
+    Only make selected prims visiable in the viewport
+    """
+
+   
+def show_all_prims() -> None:
+    """
+    Show all prims in the viewport
+    """
+
+   
+def translate_select_prims(direction:str, distance:float) -> None:
+    """
+    Move select prims to a direction by some unit
+   
+    Args:
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
+    """
+    Add a material to a prim with basic color
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        diffuse_color (Tuple[float]): a tuple of RGB floats suggestion the color of the material
+    """
+
+
+
+
+
+
+def generate_texture(prim_path: str, text: str = "A chubby orange cat riding through space, digital art") -> None:
+    """
+    Generate a texture for a prim
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        text (str): the description of the texture
+    """
+
+
+
+def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
+    """
+    Apply a texture from an existing JPG file to a prim.
+    
+    Args:
+        prim_path (str): the path of the prim to apply the texture to
+        texture_path (str): the path to the JPG file to use as texture
+    """
+
+    def createMaterialAndTexture(material):
+        
+
+
+
+def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 50)  -> None:
+    """
+    Create a camera at a position and make it look at a point
+
+    Args:
+        prim_path (str): the path of the object to look at
+        angle (float): the angle of the camera 
+        distance (float): the distance of the camera
+    """
+
+
+
+def move_prim(prim_path: str, direction: str, distance: float) -> None:
+    """
+    Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
+   
+    Args:
+        prim_path (str): the path of the prim to move
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+
+def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
+    """
+    Rotate the prim along an axis by some degree
+
+    Args:
+        prim_path (str): the path of the prim to move
+        axis (str): can be x, y, z
+        degree (float): a float suggestion the Euler degree to rotate
+    """
+
+    
+
+def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
+    """
+    Scale the prim by a ratio
+
+    Args:
+        prim_path (str): the path of the prim to move
+        relative_scale_ratio: a float suggestion the scale ratio
+    """
+
+
+def place_prim_on_another(stage, bottom_prim_path: str, top_prim_path: str) -> None:
+    """
+    Place the prim on another prim
+
+    Args:
+        prim_path (str): the path of the prim to move
+        another_prim_path (str): the path of the another prim
+    
+    e.g. place "/apple" on "/table"
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+
+def keyframe(stage, prim_path: str, attribute_path: str, time: float, value: float) -> None:
+    """
+    Keyframe an attribute of a prim at a time with a value
+
+    Args:
+        prim_path (str): the path of the prim to keyframe
+        attribute (str): the attribute to keyframe
+        time (float): the time to keyframe
+        value (float): the value to keyframe
+    """
+
+    
+def create_movement_animation(stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
+    """
+    Create a movement animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        direction (str): the direction to move
+        distance (float): the distance to move
+    """
+
+
+    
+def create_rotation_animation(stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
+    """
+    Create a 360 degree rotation animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        axis (str): the axis to rotate
+    """
+
+
+def create_scale_animation(stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
+    """
+    Create a scale animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        scale_ratio (float): the scale ratio
+    """
+
+
+def create_camera_rotate_around_object_animation(camera_path: str, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+    """
+    Create a camera animation that rotates around an object
+    """
+
+
+def camera_zoom_in(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom in animation
+
+    Args:
+        camera_path (str): the path of the camera
+        zoom_ratio (float): the ratio of the zoom
+        duration (float): the duration of the animation in seoconds
+    """
+
+
+
+def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom out animation
+    # Args:
+    #     camera_path (str): the path of the camera
+    #     zoom_ratio (float): the ratio of the zoom
+    #     duration (float): the duration of the animation in seoconds
+    """
+
+
+def camera_pan(camera_path: str, pan_distance: Gf.Vec2f, duration: float = 3):
+    """
+    Create a camera pan horizontal or vertical animation
+    """
+
+
+
+def camera_roll(camera_path: str, roll_angle: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_pull_in(camera_path: str, pull_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_push_out(camera_path: str, push_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+
+def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple[float], scale: Tuple[float], rotation: Tuple[float]) -> None:
+    """
+    Create a cube prim with specified translation, scale and rotation
+
+    Args:
+        geometry_type (str): the type of geometry to create, can be cube, sphere, plane, cylinder
+        prim_path (str): the path of the prim to create
+        translation (Tuple[float]): a tuple of 3 floats suggestion the translation of the prim
+        scale (Tuple[float]): a tuple of 3 floats suggestion the scale of the prim
+        rotation (Tuple[float]): a tuple of 3 floats suggestion the Euler rotation of the prim
+    """
+
+
+
+def place_object_on_another_object(stage, bottom_prim_path: str, top_prim_path: str):
+    """
+    Places one prim on top of another
+
+    Args:
+        bottom_prim_path (str): prim on the bottom
+        top_prim_path (str): prim on the top
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+def select_prims(prim_paths: List[str]) -> None:
+    """
+    Select prims according to prim paths
+   
+    Args:
+        prim_paths (List[str]): prim paths to select.
+    """
+
+
+def focus_on_selected_prims() -> None:    
+    """
+    Let the viewport camera focus on selected prims
+    """
+
+   
+   
+def hide_selected_prims() -> None:
+    """
+    Hide selected prims in the viewport
+    """
+
+
+def show_selected_prims() -> None:
+    """
+    Make selected prims visiable in the viewport
+    """
+
+
+def only_show_selected_prims() -> None:
+    """
+    Only make selected prims visiable in the viewport
+    """
+
+   
+def show_all_prims() -> None:
+    """
+    Show all prims in the viewport
+    """
+
+   
+def translate_select_prims(direction:str, distance:float) -> None:
+    """
+    Move select prims to a direction by some unit
+   
+    Args:
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
+    """
+    Add a material to a prim with basic color
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        diffuse_color (Tuple[float]): a tuple of RGB floats suggestion the color of the material
+    """
+
+
+
+
+
+
+def generate_texture(prim_path: str, text: str = "A chubby orange cat riding through space, digital art") -> None:
+    """
+    Generate a texture for a prim
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        text (str): the description of the texture
+    """
+
+
+
+def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
+    """
+    Apply a texture from an existing JPG file to a prim.
+    
+    Args:
+        prim_path (str): the path of the prim to apply the texture to
+        texture_path (str): the path to the JPG file to use as texture
+    """
+
+    def createMaterialAndTexture(material):
+        
+
+
+
+def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 50)  -> None:
+    """
+    Create a camera at a position and make it look at a point
+
+    Args:
+        prim_path (str): the path of the object to look at
+        angle (float): the angle of the camera 
+        distance (float): the distance of the camera
+    """
+
+
+
+def move_prim(prim_path: str, direction: str, distance: float) -> None:
+    """
+    Move the prim to a direction by some unit, Y axis is up, X axis is right, Z axis is front
+   
+    Args:
+        prim_path (str): the path of the prim to move
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+
+def rotate_prim(prim_path: str, axis: str, degree: float) -> None:
+    """
+    Rotate the prim along an axis by some degree
+
+    Args:
+        prim_path (str): the path of the prim to move
+        axis (str): can be x, y, z
+        degree (float): a float suggestion the Euler degree to rotate
+    """
+
+    
+
+def scale_prim(prim_path: str, relative_scale_ratio: float) -> None:
+    """
+    Scale the prim by a ratio
+
+    Args:
+        prim_path (str): the path of the prim to move
+        relative_scale_ratio: a float suggestion the scale ratio
+    """
+
+
+def place_prim_on_another(stage, bottom_prim_path: str, top_prim_path: str) -> None:
+    """
+    Place the prim on another prim
+
+    Args:
+        prim_path (str): the path of the prim to move
+        another_prim_path (str): the path of the another prim
+    
+    e.g. place "/apple" on "/table"
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+
+def keyframe(stage, prim_path: str, attribute_path: str, time: float, value: float) -> None:
+    """
+    Keyframe an attribute of a prim at a time with a value
+
+    Args:
+        prim_path (str): the path of the prim to keyframe
+        attribute (str): the attribute to keyframe
+        time (float): the time to keyframe
+        value (float): the value to keyframe
+    """
+
+    
+def create_movement_animation(stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
+    """
+    Create a movement animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        direction (str): the direction to move
+        distance (float): the distance to move
+    """
+
+
+    
+def create_rotation_animation(stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
+    """
+    Create a 360 degree rotation animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        axis (str): the axis to rotate
+    """
+
+
+def create_scale_animation(stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
+    """
+    Create a scale animation for a prim
+
+    Args:
+        prim_path (str): the path of the prim to animate
+        duration (float): the duration of the animation
+        scale_ratio (float): the scale ratio
+    """
+
+
+def create_camera_rotate_around_object_animation(camera_path: str, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+    """
+    Create a camera animation that rotates around an object
+    """
+
+
+def camera_zoom_in(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom in animation
+
+    Args:
+        camera_path (str): the path of the camera
+        zoom_ratio (float): the ratio of the zoom
+        duration (float): the duration of the animation in seoconds
+    """
+
+
+
+def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
+    """
+    Create a camera zoom out animation
+    # Args:
+    #     camera_path (str): the path of the camera
+    #     zoom_ratio (float): the ratio of the zoom
+    #     duration (float): the duration of the animation in seoconds
+    """
+
+
+def camera_pan(camera_path: str, pan_distance: Gf.Vec2f, duration: float = 3):
+    """
+    Create a camera pan horizontal or vertical animation
+    """
+
+
+
+def camera_roll(camera_path: str, roll_angle: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_pull_in(camera_path: str, pull_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+def camera_push_out(camera_path: str, push_distance: float, duration: float = 3):
+    """
+    
+    """
+
+
+
+def create_basic_geometry(geometry_type: str, prim_path: str, translation: Tuple[float], scale: Tuple[float], rotation: Tuple[float]) -> None:
+    """
+    Create a cube prim with specified translation, scale and rotation
+
+    Args:
+        geometry_type (str): the type of geometry to create, can be cube, sphere, plane, cylinder
+        prim_path (str): the path of the prim to create
+        translation (Tuple[float]): a tuple of 3 floats suggestion the translation of the prim
+        scale (Tuple[float]): a tuple of 3 floats suggestion the scale of the prim
+        rotation (Tuple[float]): a tuple of 3 floats suggestion the Euler rotation of the prim
+    """
+
+
+
+def place_object_on_another_object(stage, bottom_prim_path: str, top_prim_path: str):
+    """
+    Places one prim on top of another
+
+    Args:
+        bottom_prim_path (str): prim on the bottom
+        top_prim_path (str): prim on the top
+    """
+
+
+def focus_on_prim(stage, prim_path: str):
+    """
+    Focuses on the prim specified
+
+    Args:
+        prim_path (str): prim which should be focused on
+    """
+
+
+def select_prims(prim_paths: List[str]) -> None:
+    """
+    Select prims according to prim paths
+   
+    Args:
+        prim_paths (List[str]): prim paths to select.
+    """
+
+
+def focus_on_selected_prims() -> None:    
+    """
+    Let the viewport camera focus on selected prims
+    """
+
+   
+   
+def hide_selected_prims() -> None:
+    """
+    Hide selected prims in the viewport
+    """
+
+
+def show_selected_prims() -> None:
+    """
+    Make selected prims visiable in the viewport
+    """
+
+
+def only_show_selected_prims() -> None:
+    """
+    Only make selected prims visiable in the viewport
+    """
+
+   
+def show_all_prims() -> None:
+    """
+    Show all prims in the viewport
+    """
+
+   
+def translate_select_prims(direction:str, distance:float) -> None:
+    """
+    Move select prims to a direction by some unit
+   
+    Args:
+        direction (str): can be up, down, left, right, front, back
+        distance (float): a float suggestion the distance to move
+    """
+
+
+def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
+    """
+    Add a material to a prim with basic color
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        diffuse_color (Tuple[float]): a tuple of RGB floats suggestion the color of the material
+    """
+
+
+
+
+
+
+def generate_texture(prim_path: str, text: str = "A chubby orange cat riding through space, digital art") -> None:
+    """
+    Generate a texture for a prim
+    
+    Args:
+        prim_path (str): the path of the prim to create
+        text (str): the description of the texture
+    """
+
+
+
+def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
+    """
+    Apply a texture from an existing JPG file to a prim.
+    
+    Args:
+        prim_path (str): the path of the prim to apply the texture to
+        texture_path (str): the path to the JPG file to use as texture
     """
 
     def createMaterialAndTexture(material):

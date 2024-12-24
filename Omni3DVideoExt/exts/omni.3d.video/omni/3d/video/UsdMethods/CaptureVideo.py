@@ -1,5 +1,6 @@
 import omni.ui
 from omni.kit.widget.viewport import ViewportWidget
+from omni.kit.capture.viewport import CaptureOptions, CaptureExtension
 import omni.kit.capture.viewport
 import omni.timeline
 import carb
@@ -61,7 +62,9 @@ def render_video(viewport_api, output_folder):
     
     # Set the start and end frames based on the existing timeline
     options.start_frame = int(timeline.get_start_time())
-    options.end_frame = int(timeline.get_end_time())
+    options.end_frame = 240 #int(timeline.get_end_time())
+    print("options.start_frame", options.start_frame)
+    print("options.end_frame", options.end_frame)
 
     print(f"Capturing from frame {options.start_frame} to {options.end_frame}")
 
@@ -97,36 +100,22 @@ def render_video(viewport_api, output_folder):
     
     # Use the viewport we created
     options.viewport = viewport_api
-    options.camera_path = viewport_api.camera_path
+    options.camera = '/perspectivecamera'
 
     # Set up video capture settings
-    options.capture_frames = True
-    options.write_frames = True
+    options.capture_frames = False
+    options.write_frames = False
     options.fps = timeline.get_time_codes_per_seconds()
 
     print(f"Capture frames: {options.capture_frames}")
     print(f"Write frames: {options.write_frames}")
     print(f"Frames per second: {options.fps}")
-    print(f"Using camera path: {options.camera_path}")
+    print(f"Using camera path: {options.camera}")
 
     stage = omni.usd.get_context().get_stage()
     print("Prims in the scene:")
     for prim in stage.Traverse():
         print(f"- {prim.GetPath()}")
-
-    # Debug: Check if the camera exists
-    camera_prim = stage.GetPrimAtPath(options.camera_path)
-    if camera_prim.IsValid():
-        print(f"Camera found at path: {options.camera_path}")
-    else:
-        print(f"Warning: No camera found at path: {options.camera_path}")
-
-    # Debug: Check viewport camera
-    print(f"Current viewport camera: {viewport_api.camera_path}")
-
-    # Attempt to set viewport camera explicitly
-    viewport_api.camera_path = options.camera_path
-    print(f"Set viewport camera to: {viewport_api.camera_path}")
 
     # Start capture
     capture_instance = omni.kit.capture.viewport.CaptureExtension().get_instance()

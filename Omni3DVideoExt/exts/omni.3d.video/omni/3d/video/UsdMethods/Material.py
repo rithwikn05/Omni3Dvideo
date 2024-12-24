@@ -4,6 +4,7 @@ import uuid
 import logging
 
 import omni.usd
+import os
 
 from typing import Optional, List, Tuple
 
@@ -93,6 +94,41 @@ def generate_texture(prim_path: str, text: str = "A chubby orange cat riding thr
     diffuse_texture_in.GetAttr().SetColorSpace("sRGB")
 
     # bind the material to the prim
+    UsdShade.MaterialBindingAPI(stage.GetPrimAtPath(prim_path)).Bind(mtl, UsdShade.Tokens.strongerThanDescendants)
+
+
+def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
+    """
+    Apply a texture from an existing JPG file to a prim.
+    
+    Args:
+        prim_path (str): the path of the prim to apply the texture to
+        texture_path (str): the path to the JPG file to use as texture
+    """
+
+    # Ensure the texture file exists
+    if not os.path.isfile(texture_path):
+        raise FileNotFoundError(f"Texture file not found: {texture_path}")
+
+    # Bind material and texture
+    stage = omni.usd.get_context().get_stage()
+    mtl_random_name = str(uuid.uuid4())[:3]
+    mtl_path = Sdf.Path(f"/World/Looks/TextureMaterial_{mtl_random_name}")
+    mtl = UsdShade.Material.Define(stage, mtl_path)
+    shader = UsdShade.Shader.Define(stage, mtl_path.AppendPath("Shader"))
+    shader.CreateImplementationSourceAttr(UsdShade.Tokens.sourceAsset)
+    shader.SetSourceAsset("OmniPBR.mdl", "mdl")
+    shader.SetSourceAssetSubIdentifier("OmniPBR", "mdl")
+    mtl.CreateSurfaceOutput("mdl").ConnectToSource(shader.ConnectableAPI(), "out")
+    mtl.CreateDisplacementOutput("mdl").ConnectToSource(shader.ConnectableAPI(), "out")
+    mtl.CreateVolumeOutput("mdl").ConnectToSource(shader.ConnectableAPI(), "out")
+
+    # Set the texture from the provided JPG file
+    diffuse_texture_in = shader.CreateInput("diffuse_texture", Sdf.ValueTypeNames.Asset)
+    diffuse_texture_in.Set(texture_path)
+    diffuse_texture_in.GetAttr().SetColorSpace("sRGB")
+
+    # Bind the material to the prim
     UsdShade.MaterialBindingAPI(stage.GetPrimAtPath(prim_path)).Bind(mtl, UsdShade.Tokens.strongerThanDescendants)
 
     

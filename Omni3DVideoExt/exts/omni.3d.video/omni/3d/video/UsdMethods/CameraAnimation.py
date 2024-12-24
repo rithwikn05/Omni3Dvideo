@@ -74,21 +74,22 @@ def camera_zoom_in(camera_path: str, zoom_ratio: float = 2.0, duration: float = 
         zoom_ratio (float): the ratio of the zoom
         duration (float): the duration of the animation in seoconds
     """
-    print("in here")
-    print("zoom_ratio", zoom_ratio)
+    camera_path = "/perspectivecamera"
+
     stage = omni.usd.get_context().get_stage()
-    camera = stage.DefinePrim(camera_path, "Camera")
-    camera_xformable = UsdGeom.Xformable(camera)
-    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
+    camera = stage.GetPrimAtPath(camera_path)
+    if not (camera and camera.IsValid()):
+        camera = stage.DefinePrim(camera_path, "Camera")
+        camera_xformable = UsdGeom.Xformable(camera)
+        camera_xformable.AddTranslateOp().Set(time = 0, value = Gf.Vec3d(0, 0, 50))
 
     focal_length_attr = camera.GetAttribute("focalLength")
     current_focal_length = focal_length_attr.Get()
     new_focal_length = current_focal_length * zoom_ratio
 
-    focal_length_attr.Set(value=current_focal_length, time=0)
-
-    end_time = duration * stage.GetFramesPerSecond()
-    focal_length_attr.Set(value=new_focal_length, time=end_time)
+    focal_length_attr.Set(value=current_focal_length, time=curr_time)
+    curr_time += duration * stage.GetFramesPerSecond()
+    focal_length_attr.Set(value=new_focal_length, time=curr_time)
 
 
 def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float = 3):
@@ -99,8 +100,13 @@ def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float =
     #     zoom_ratio (float): the ratio of the zoom
     #     duration (float): the duration of the animation in seoconds
     """
+    camera_path = "/perspectivecamera"
     stage = omni.usd.get_context().get_stage()
-    camera = stage.DefinePrim(camera_path, "Camera")
+    camera = stage.GetPrimAtPath(camera_path)
+    if not (camera and camera.IsValid()):
+        camera = stage.DefinePrim(camera_path, "Camera")
+        camera_xformable = UsdGeom.Xformable(camera)
+        camera_xformable.AddTranslateOp().Set(time = 0, value = Gf.Vec3d(0, 0, 50))
 
     focal_length_attr = camera.GetAttribute("focalLength")
     current_focal_length = focal_length_attr.Get()
@@ -113,10 +119,12 @@ def camera_zoom_out(camera_path: str, zoom_ratio: float = 2.0, duration: float =
 
 def camera_pan(camera_path: str, pan_distance: Gf.Vec2f, duration: float = 3):
     """
-    
+    Create a camera pan horizontal or vertical animation
     """
     stage = omni.usd.get_context().get_stage()
-    camera = stage.GetPrimAtPath(camera_path)
+    camera = stage.DefinePrim(camera_path, "Camera")
+    camera_xformable = UsdGeom.Xformable(camera)
+    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
 
     pan_attr = camera.GetAttribute("xformOp:translate")
     current_orientation = pan_attr.Get()
@@ -135,11 +143,11 @@ def camera_roll(camera_path: str, roll_angle: float, duration: float = 3):
     stage = omni.usd.get_context().get_stage()
     camera = stage.DefinePrim(camera_path, "Camera")
     axis = Gf.Vec3d(0, 0, 1).GetNormalized()
+    camera_xformable = UsdGeom.Xformable(camera)
+    camera_xformable.AddRotateXYZOp().Set(Gf.Vec3d(0, 0, 50))
+    
+    rotation_attr = camera.GetAttribute("xformOp:rotateXYZ")
 
-    rotation_attr = camera.GetAttribute("xformOp:rotateX")
-    # if not rotation_attr:
-    #     print("here")
-    #     camera = camera.AddAttribute("xformOp:rotateXYZ")
     current_rotation = rotation_attr.Get()  
     
     print(current_rotation)
@@ -160,11 +168,11 @@ def camera_pull_in(camera_path: str, pull_distance: float, duration: float = 3):
     stage = omni.usd.get_context().get_stage()
     camera = stage.DefinePrim(camera_path, "Camera")
     camera_xformable = UsdGeom.Xformable(camera)
-    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
+    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(50, 50, 5000))
 
     translation_attr = camera.GetAttribute("xformOp:translate")
     current_translation = translation_attr.Get()
-    new_translation = current_translation - Gf.Vec3d(0, 0, pull_distance)
+    new_translation = current_translation + Gf.Vec3d(0, 0, pull_distance)
 
     translation_attr.Set(value=current_translation, time=0)
 
@@ -178,7 +186,7 @@ def camera_push_out(camera_path: str, push_distance: float, duration: float = 3)
     stage = omni.usd.get_context().get_stage()
     camera = stage.DefinePrim(camera_path, "Camera")
     camera_xformable = UsdGeom.Xformable(camera)
-    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(0, 0, 50))
+    camera_xformable.AddTranslateOp().Set(Gf.Vec3d(50, 50, 5000))
 
     translation_attr = camera.GetAttribute("xformOp:translate")
     current_translation = translation_attr.Get()

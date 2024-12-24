@@ -53,7 +53,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 # ui.Button("debug", height = 20, clicked_fn=self.debug)
                 ui.Button("read prompt", height = 20, clicked_fn=_generate)
                 ui.Button("debug2", height = 20, clicked_fn=self.debug2)
-                # ui.Button("convert", height = 20, clicked_fn=self.convert)
+                ui.Button("convert", height = 20, clicked_fn=self.convert)
                 ui.Button("generate", height = 20, clicked_fn=self.run_gpt_generated_code)
                 ui.Button("build_animation", height = 20, clicked_fn=self.build_animation)
                 ui.Button("Render Video", height = 20, clicked_fn=self.render_video)
@@ -132,9 +132,15 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # create_camera_look_at("/World/Cube")
         # stage = omni.usd.get_context().get_stage()
 
-        from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
-        from .UsdMethods.CameraAnimation import camera_roll
-        camera_roll("/camera", 120, 5)
+        # from .UsdMethods.Animation import keyframe, create_movement_animation, create_rotation_animation, create_scale_animation
+        # from .UsdMethods.CameraAnimation import camera_roll
+        # camera_roll("/camera", 120, 5)
+        
+        from .UsdMethods.ReadObjectsToOmni import import_asset
+        from .UsdMethods.Material import generate_texture
+        print(self.prompt_field.model.get_value_as_string())
+        import_asset(self.prompt_field.model.get_value_as_string())
+        generate_texture("/New_Stage/army_tank")
 
         # # create_scale_animation("/World/Cube", 15.0, 8.0)
 
@@ -156,14 +162,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # from .UsdMethods.Camera import create_camera_look_at
         # create_camera_look_at("/World/Cube")        
     def convert(self):
-        from .UsdMethods.ConvertToUSD import convert
-
-        import asyncio
-
-        asyncio.ensure_future(convert("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/anise_001_scan.obj", 
-                                      "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/anise_001_scan_usd.usd"))
-        
-
+        from .UsdMethods.Material import generate_texture, apply_texture_from_file
+        apply_texture_from_file("/New_Stage/army_tank", "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/downloads/army-tank/textures/cat_image_texture.png")
         
     def run_gpt_generated_code(self):
         from .UsdMethods.ReadObjectsToOmni import import_asset, read_parsed_code
@@ -196,9 +196,12 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         # from .UsdMethods.CameraAnimation import camera_zoom_in, camera_roll, camera_pan, camera_pull_in, camera_push_out
         # camera_roll("/camera", 30, 3)
+        curr_time = 0.0
         from .UsdMethods.ReadObjectsToOmni import processing_gpt_calls, parsing_python_scripts, adding_python_scripts, import_asset, string_to_function_call
         from .UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
         
+        from .Omni3DVideo import Omni3DVideo
+
         adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
         from .UsdMethods.GPTCalls import get_code_from_gpt
         code = processing_gpt_calls(self.prompt_field.model.get_value_as_string())
@@ -213,6 +216,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
             method = match.group(2).strip()
         # if method_match:
         #     method = method_match.group(1).strip()
+
+        print(subject)
 
         import_asset(subject)
         
