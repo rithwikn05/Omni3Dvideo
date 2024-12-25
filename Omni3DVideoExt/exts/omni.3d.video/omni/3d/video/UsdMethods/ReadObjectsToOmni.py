@@ -46,7 +46,7 @@ def adding_python_scripts(txt_file_path: str):
 
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Material.py", txt_file_path)
 
-def string_to_function_call(func_string, prompt):
+def string_to_function_call(stage, camera, func_string, prompt):
     # Extract function name and arguments
 
     match = re.match(r'(\w+)\((.*)\)', func_string)
@@ -80,9 +80,9 @@ def string_to_function_call(func_string, prompt):
         raise ValueError(f"Function '{func_name}' not found")
     
     # Call the function
-    return func(*kwargs.values())
+    return func(stage, camera, *kwargs.values())
 
-def import_asset(prompt) -> str:
+def import_asset(stage, prompt) -> str:
     """
     Pull the object from the AWS bucket and load it into the scene
     Args:
@@ -180,15 +180,13 @@ def import_asset(prompt) -> str:
             s3.download_file(bucket_name, s3_texture_path, str(local_texture_path))
 
     #Start of creating a reference for the prim
-    add_reference(local_object_path, usd_prompt)
+    add_reference(stage, local_object_path, usd_prompt)
     if s3_texture_path:
         apply_texture_from_file(f"/New_Stage/{usd_prompt}", local_texture_path)
 
-def add_reference(local_path, prompt):
+def add_reference(stage, local_path, prompt):
 
     print("in add reference")
-    # Create new USD stage
-    stage: Usd.Stage = omni.usd.get_context().get_stage()
 
     # Create and define default prim, so this file can be easily referenced again
     default_prim = UsdGeom.Xform.Define(stage, Sdf.Path("/New_Stage"))
