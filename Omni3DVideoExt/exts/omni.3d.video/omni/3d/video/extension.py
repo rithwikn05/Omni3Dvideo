@@ -1,6 +1,6 @@
 import omni.ext
 import omni.ui as ui
-from pxr import UsdGeom, Gf, Usd
+from pxr import UsdGeom, Gf, Usd, Sdf
 import logging
 import omni.kit.pipapi
 import os
@@ -30,12 +30,12 @@ class Omni3dVideoExtension(omni.ext.IExt):
         super().__init__(**kwargs)
         self.prompt_field = ""
         self.prompt = ""
-        self.stage = omni.usd.get_context().get_stage()
-        self.camera = self.stage.DefinePrim('/perspectivecamera', "Camera")
-        self.camera_xformable = UsdGeom.Xformable(self.camera)
-        # self.camera_xformable.AddRotateXYZOp()
-        # self.camera_xformable.AddRotateXYZOp()
-        # self.camera_xformable.AddRotateXYZOp()
+        self.stage = Usd.Stage.CreateNew("Omni3DVideoStage.usd")
+        # default_prim = UsdGeom.Xform.Define(self.stage, Sdf.Path("/New_Stage"))
+        # self.stage.SetDefaultPrim(default_prim.GetPrim())
+
+        # self.camera = self.stage.DefinePrim('/perspectivecamera', "Camera")
+        # self.camera_xformable = UsdGeom.Xformable(self.camera)
 
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
