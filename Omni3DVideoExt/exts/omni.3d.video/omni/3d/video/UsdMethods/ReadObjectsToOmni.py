@@ -1,17 +1,21 @@
-import boto3
-import os
-import re
-import json
-from pxr import UsdGeom, Usd, Sdf
-import omni.usd
-import ast
-
+# TODO: severe coding malpractice to refer to files in the previous directory, ur directory structure should be better planned
 from ..utils import get_extension_path
 # from ..UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
 from ..UsdMethods.Material import apply_texture_from_file
 from ..UsdMethods.CreateGeometry import place_object_on_another_object
 
 from ..Omni3DVideo import Omni3DVideo
+
+import boto3
+
+from pxr import UsdGeom, Usd, Sdf
+import omni.usd
+
+import os
+import re
+import json
+import ast
+
 """
 1. First user enters the object/objects they want to appear on the scene and what animation they 
 want to happen (ex: rotate camera around the object)
@@ -20,30 +24,28 @@ want to happen (ex: rotate camera around the object)
 specified movement and generate a python script to do it
 4. Put this script into Omniverse and animate the object
 """
-def test():
-    print("hello")
 
-def processing_gpt_calls(prompt):
-    from ..UsdMethods.GPTCalls import get_code_from_gpt
+# TODO: commented for deletion
+# def test():
+#     print("hello")
 
-    with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
-        content = file.read()
-    code = get_code_from_gpt(prompt, content)
-    return code 
+# TODO: commented for deletion
+# def processing_gpt_calls(prompt): # TODO: ermmmmm... this is a wrapper for your own python method from another file!
+#     from ..UsdMethods.GPTCalls import get_code_from_gpt
 
+#     with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
+#         content = file.read()
+#     code = get_code_from_gpt(prompt, content)
+#     return code 
+
+# TODO: what exactly does this do, is it mainly all the animation methods?
 def adding_python_scripts(txt_file_path: str):
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Camera.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Transform.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Animation.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/CameraAnimation.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/CreateGeometry.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Select.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Material.py", txt_file_path)
 
 def string_to_function_call(stage, camera, func_string, prompt):
@@ -72,6 +74,7 @@ def string_to_function_call(stage, camera, func_string, prompt):
                 if args == "camera_path: str":
                     print(f"/New_Stage/{prompt}")
                     args.append(f"/New_Stage/{prompt}")
+    
     print("args", args)
     print("kwargs", kwargs)
     # Get the function from globals()
@@ -90,9 +93,13 @@ def import_asset(stage, prompt) -> str:
     Return:
         str: the path of the object
     """
-    aws_access_id = "AKIA4HMIAHI53YO5JHJG"
-    aws_secret_access_id = "gDjGAN+Y9XiOiEpTRJyscym1MDYeT1D/6rWW5uy+"
-    region_name = "us-west-1"
+    aws_access_id = "AKIA4HMIAHI53YO5JHJG" # TODO: MAGIC VALUE!
+    aws_secret_access_id = "gDjGAN+Y9XiOiEpTRJyscym1MDYeT1D/6rWW5uy+" # TODO: MAGIC VALUE!
+    region_name = "us-west-1" # TODO: MAGIC VALUE!
+    # TODO: to avoid this, there are two solutions:
+    # 1. create an encapsulation/class for this data, and have a method in that class called import_asset
+    # 2. require users to pass in this data every time import_asset is called
+    # the former might be better if AWS buckets can be "kept open" to reduce latency when this method is called multiple times in succession
 
     s3 = boto3.client('s3', 
                   aws_access_key_id=aws_access_id,
@@ -223,6 +230,7 @@ def add_ext_reference(prim: Usd.Prim, ref_asset_path: str, ref_target_path: Sdf.
         )
 
 
+# TODO: comment this method better, figure out what it does
 def parsing_python_scripts(file_path, output_file):
     if not os.path.exists(file_path):
         print(f"Error: Input file '{file_path}' does not exist.")
@@ -231,7 +239,7 @@ def parsing_python_scripts(file_path, output_file):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    pattern = r'^\s*def\s+\w+\s*\([^)]*\)\s*(?:->\s*\w+)?\s*:\s*(?:"""[\s\S]*?""")?'
+    pattern = r'^\s*def\s+\w+\s*\([^)]*\)\s*(?:->\s*\w+)?\s*:\s*(?:"""[\s\S]*?""")?' # TODO: ermmmm... what does this regex do, add comment
     matches = re.findall(pattern, content, re.MULTILINE)
     output_dir = os.path.dirname(output_file)
     if not os.path.exists(output_dir):

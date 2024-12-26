@@ -8,7 +8,7 @@ stage = omni.usd.get_context().get_stage()
 camera = None
 camera_xformable = None
 
-class Omni3DVideo():
+class Omni3dVideo():
     def __init__(self):
         stage = Usd.Stage.CreateNew("New Stage")
         camera = stage.DefinePrim('\perspectivecamera', "Camera")
