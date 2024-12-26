@@ -99,7 +99,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         
         # work with GPTCoder
         with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
-            content = file.read()
+            content = file.read() # TODO: You do realize lol, you just wrote this content to the file on the previous line... and now you're immediately reading it back. there was no point in storing it in the file in the first place, just return the string from the grab_python_scripts method. OR, take that string and store it somewhere in memory (either RAM or file system) and use it directly, rather than do all this funny business.
         code = self.gpt_coder.get_code(self.prompt_field.model.get_value_as_string(), content)
         print(code)
         
