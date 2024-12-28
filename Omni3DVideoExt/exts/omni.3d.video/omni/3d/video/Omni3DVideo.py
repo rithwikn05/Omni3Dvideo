@@ -8,6 +8,9 @@ class Omni3dVideo():
     #######################################################
     ############    Camera Animation Methods    ###########
     #######################################################
+
+    def __init__(self):
+        self.time = 0
     
     # def create_camera_rotate_around_object_animation(stage, camera, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
     #     """
@@ -65,7 +68,7 @@ class Omni3dVideo():
     #     timeline.set_start_time(start_time)
     #     timeline.set_end_time(end)
 
-    def camera_zoom_in(stage, camera, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_in(self, stage, camera, zoom_ratio: float = 2.0, duration: float = 3):
         """
         Create a camera zoom in animation
 
@@ -78,12 +81,13 @@ class Omni3dVideo():
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length * zoom_ratio
 
-        focal_length_attr.Set(value=current_focal_length, time=curr_time)
-        curr_time += duration * stage.GetFramesPerSecond()
-        focal_length_attr.Set(value=new_focal_length, time=curr_time)
+        focal_length_attr.Set(value=current_focal_length, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
+        focal_length_attr.Set(value=new_focal_length, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
 
 
-    def camera_zoom_out(stage, camera, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_out(self, stage, camera, zoom_ratio: float = 2.0, duration: float = 3):
         """
         Create a camera zoom out animation
         # Args:
@@ -95,12 +99,12 @@ class Omni3dVideo():
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length / zoom_ratio
 
-        focal_length_attr.Set(value=current_focal_length, time=0)
-
-        end_time = duration * stage.GetFramesPerSecond()
+        focal_length_attr.Set(value=current_focal_length, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
         focal_length_attr.Set(value=new_focal_length, time=end_time)
+        self.time += duration * stage.GetFramesPerSecond()
 
-    def camera_pan(stage, camera, pan_distance: Gf.Vec2f, duration: float = 3):
+    def camera_pan(self, stage, camera, pan_distance: Gf.Vec2f, duration: float = 3):
         """
         Create a camera pan horizontal or vertical animation
         """
@@ -110,11 +114,12 @@ class Omni3dVideo():
 
         pan_attr.Set(value=current_orientation, time=0)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        pan_attr.Set(value=new_translation, time=end_time)
+        self.time += duration * stage.GetFramesPerSecond()
+        pan_attr.Set(value=new_translation, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
 
 
-    def camera_roll(stage, camera, roll_angle: float, duration: float = 3):
+    def camera_roll(self, stage, camera, roll_angle: float, duration: float = 3):
         """
         
         """
@@ -132,10 +137,11 @@ class Omni3dVideo():
             new_rotation = Gf.Vec3d(current_rotation[0] + axis[0] * roll_angle, current_rotation[1] + axis[1] * roll_angle, current_rotation[1] + axis[2] * roll_angle)
             rotation_attr.Set(value = current_rotation, time = 0)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        rotation_attr.Set(value = new_rotation, time = end_time)
+        self.time += duration * stage.GetFramesPerSecond()
+        rotation_attr.Set(value=new_rotation, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
 
-    def camera_pull_in(stage, camera, pull_distance: float, duration: float = 3):
+    def camera_pull_in(self, stage, camera, pull_distance: float, duration: float = 3):
         """
         
         """
@@ -145,10 +151,11 @@ class Omni3dVideo():
 
         translation_attr.Set(value=current_translation, time=0)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        translation_attr.Set(value=new_translation, time=end_time)
+        self.time += duration * stage.GetFramesPerSecond()
+        translation_attr.Set(value=new_translation, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
 
-    def camera_push_out(stage, camera, push_distance: float, duration: float = 3):
+    def camera_push_out(self, stage, camera, push_distance: float, duration: float = 3):
         """
         
         """
@@ -156,19 +163,17 @@ class Omni3dVideo():
         current_translation = translation_attr.Get()
         new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
 
-        translation_attr.Set(value=current_translation, time=0)
+        translation_attr.Set(value=current_translation, time=self.time)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        translation_attr.Set(value=new_translation, time=end_time)
-
-
-
+        self.time += duration * stage.GetFramesPerSecond()
+        translation_attr.Set(value=new_translation, time=self.time)
+        self.time += duration * stage.GetFramesPerSecond()
 
     #######################################################
     ###############    Animation Methods    ###############
     #######################################################
 
-    def keyframe(stage, camera, prim_path: str, attribute_path: str, time: float, value: float) -> None:
+    def keyframe(self, stage, camera, prim_path: str, attribute_path: str, time: float, value: float) -> None:
         """
         Keyframe an attribute of a prim at a time with a value
 
@@ -259,7 +264,7 @@ class Omni3dVideo():
 
         # xformable.SetXformOpOrder([])
         
-    def create_movement_animation(stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
+    def create_movement_animation(self, stage, prim_path: str, duration: float, direction: str = "X", distance: float = 2000.0) -> None:
         """
         Create a movement animation for a prim
 
@@ -292,7 +297,7 @@ class Omni3dVideo():
         xformable_object.Set(end_position, duration)
 
         
-    def create_rotation_animation(stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
+    def create_rotation_animation(self, stage, prim_path: str, duration: float, axis: str = "Y", degree: float = 180) -> None:
         """
         Create a 360 degree rotation animation for a prim
 
@@ -322,7 +327,7 @@ class Omni3dVideo():
         xformable_prim.Set(Gf.Quatf(0.0, 0.0, 0.0, 0.0), 0)
         xformable_prim.Set(new_angle, duration)
 
-    def create_scale_animation(stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
+    def create_scale_animation(self, stage, prim_path: str, duration: float, scale_ratio: float = 2.0) -> None:
         """
         Create a scale animation for a prim
 
