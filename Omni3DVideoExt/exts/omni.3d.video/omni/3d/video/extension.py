@@ -106,8 +106,10 @@ class Omni3dVideoExtension(omni.ext.IExt):
         print(code)
         pattern = r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)' # TODO: comment what this does
     
-        match = re.search(pattern, code, re.DOTALL)
-        if match:
+        matches = re.findall(pattern, code, re.DOTALL)
+        if matches:
+            print(matches)
+
             subject = match.group(1).strip()
             method = match.group(2).strip()
 
