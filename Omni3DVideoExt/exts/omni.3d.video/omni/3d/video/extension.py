@@ -40,7 +40,11 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         self.camera_path = '/perspectivecamera'
         camera = self.stage.DefinePrim(self.camera_path, "Camera")
+        camera_xformable = UsdGeom.Xformable(camera)
+        camera_xformable = camera_xformable.AddTranslateOp()
+        camera_xformable = camera_xformable.AddRotateXYZOp()
         assert camera
+        self.time = 0.0
 
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
@@ -84,28 +88,35 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
     def build_animation(self):
         import re
-        curr_time = 0.0
-        from .UsdMethods.ReadObjectsToOmni import processing_gpt_calls, parsing_python_scripts, adding_python_scripts, import_asset, string_to_function_call
-        from .UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
-        
+        from .UsdMethods.ReadObjectsToOmni import adding_python_scripts, import_asset, string_to_function_call
+
         adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
-        from .UsdMethods.GPTCalls import get_code_from_gpt
-        code = processing_gpt_calls(self.prompt_field.model.get_value_as_string())
+
+        with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
+            content = file.read() # TODO: You do realize lol, you just wrote this content to the file on the previous line... and now you're immediately reading it back. there was no point in storing it in the file in the first place, just return the string from the grab_python_scripts method. OR, take that string and store it somewhere in memory (either RAM or file system) and use it directly, rather than do all this funny business.
+        code = self.gpt_coder.get_code(self.prompt_field.model.get_value_as_string(), content)
         print(code)
         
-        print(code)
-        pattern = r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
+        pattern = r'Action:\s*(.*?)\s*\n.*?Subject:\s*(.*?)\s*\n'
+        #r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
     
-        match = re.search(pattern, code, re.DOTALL)
-        if match:
-            subject = match.group(1).strip()
-            method = match.group(2).strip()
+        matches = re.findall(pattern, code)
+        if matches:
+            print(matches)
+
+            for match in matches:
+                method = match[0].strip()
+                subject = match[1].strip()
+
+                print(f"Processing Subject: {subject}, Method: {method}")
+
+                # Replace with your function calls
+                import_asset(self, subject)
+                string_to_function_call(self, method, subject)
+        else:
+            print("[WARNING] Something went wrong, could not parse GPT response") # TODO: promote to error status?
 
         print(subject)
-
-        import_asset(self, subject)
-        
-        string_to_function_call(self, method, subject)
 
     def render_video(self):
         from .UsdMethods.CaptureVideo import render_video, setup_viewport

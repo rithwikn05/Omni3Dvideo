@@ -26,7 +26,7 @@ def get_code_from_gpt(prompt, omniverse_code):
             "messages": [
                 {
                     "role": "system",
-                    "content": f"You are a coding assistant specialized in understanding natural language instructions and mapping them to specific programming methods. Given a list of available methods, your task is to accurately identify the action to perform, the subject of the action, and determine the most appropriate method to call."
+                    "content": f"You are a coding assistant specialized in understanding natural language instructions and mapping them to specific programming methods. Given a list of available methods, your task is to accurately identify a sequence of actions to perform, the subject of each action, and determine the most appropriate sequence of methods to call."
                 },
                 {
                     "role": "assistant",
@@ -34,7 +34,7 @@ def get_code_from_gpt(prompt, omniverse_code):
                 },
                 {
                     "role": "user",
-                    "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify the action to be performed (e.g., zoom, pan). 2. Identify the subject of the action (e.g., battery, screen). 3. Match the identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the identified action, subject, and corresponding method in your response all in seperate lines."
+                    "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify a sequence of actions to be performed (e.g., zoom, pan). 2. Identify the subject of each action (e.g., battery, screen). 3. Match each identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the list of identified actions, subjects, and corresponding methods in your response all in seperate lines." # TODO: update for few-shot prompting
                 }
             ]
         }
@@ -44,6 +44,7 @@ def get_code_from_gpt(prompt, omniverse_code):
         # Check if the request was successful
         if response.status_code == 200:
             content = response.json()['choices'][0]['message']['content']
+            print("GPT outputted steps: ", content)
         else:
             print("Error was got.")
 

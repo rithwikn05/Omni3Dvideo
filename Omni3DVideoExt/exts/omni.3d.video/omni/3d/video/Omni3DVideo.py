@@ -66,7 +66,7 @@ class Omni3DVideo():
     #     timeline.set_start_time(start_time)
     #     timeline.set_end_time(end)
 
-    def camera_zoom_in(extension, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_in(self, extension, zoom_ratio: float = 2.0, duration: float = 3):
         """
         Create a camera zoom in animation
 
@@ -75,19 +75,19 @@ class Omni3DVideo():
             zoom_ratio (float): the ratio of the zoom
             duration (float): the duration of the animation in seoconds
         """
-        curr_time = 0
         # stage = omni.usd.get_context().get_stage()
         camera = extension.stage.GetPrimAtPath(extension.camera_path)
         focal_length_attr = camera.GetAttribute("focalLength")
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length * zoom_ratio
 
-        focal_length_attr.Set(value=current_focal_length, time=curr_time)
-        curr_time += duration * extension.stage.GetFramesPerSecond()
-        focal_length_attr.Set(value=new_focal_length, time=curr_time)
+        focal_length_attr.Set(value=current_focal_length, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+        focal_length_attr.Set(value=new_focal_length, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
 
 
-    def camera_zoom_out(extension, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_out(self, extension, zoom_ratio: float = 2.0, duration: float = 3):
         """
         Create a camera zoom out animation
         # Args:
@@ -101,33 +101,31 @@ class Omni3DVideo():
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length / zoom_ratio
 
-        focal_length_attr.Set(value=current_focal_length, time=0)
+        focal_length_attr.Set(value=current_focal_length, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+        focal_length_attr.Set(value=new_focal_length, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
 
-        end_time = duration * extension.stage.GetFramesPerSecond()
-        focal_length_attr.Set(value=new_focal_length, time=end_time)
-
-    def camera_pan(camera_path, pan_distance: Gf.Vec2f, duration: float = 3):
+    def camera_pan(self, extension, pan_distance: Gf.Vec2f, duration: float = 3):
         """
         Create a camera pan horizontal or vertical animation
         """
-        stage = omni.usd.get_context().get_stage()
-        camera = stage.GetPrimAtPath(camera_path)
+        camera = extension.stage.GetPrimAtPath(extension.camera_path)
         pan_attr = camera.GetAttribute("xformOp:translate")
         current_orientation = pan_attr.Get()
         new_translation = Gf.Vec3f(current_orientation[0] + pan_distance[0], current_orientation[1], current_orientation[2] + pan_distance[1])
 
-        pan_attr.Set(value=current_orientation, time=0)
+        pan_attr.Set(value=current_orientation, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+        pan_attr.Set(value=new_translation, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
 
-        end_time = duration * stage.GetFramesPerSecond()
-        pan_attr.Set(value=new_translation, time=end_time)
 
-
-    def camera_roll(camera_path, roll_angle: float, duration: float = 3):
+    def camera_roll(self, extension, roll_angle: float, duration: float = 3):
         """
         
         """
-        stage = omni.usd.get_context().get_stage()
-        camera = stage.GetPrimAtPath(camera_path)
+        camera = extension.stage.GetPrimAtPath(extension.camera_path)
         axis = Gf.Vec3d(0, 0, 1).GetNormalized()
         
         rotation_attr = camera.GetAttribute("xformOp:rotateXYZ")
@@ -142,39 +140,38 @@ class Omni3DVideo():
             new_rotation = Gf.Vec3d(current_rotation[0] + axis[0] * roll_angle, current_rotation[1] + axis[1] * roll_angle, current_rotation[1] + axis[2] * roll_angle)
             rotation_attr.Set(value = current_rotation, time = 0)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        rotation_attr.Set(value = new_rotation, time = end_time)
+        extension.time += duration * extension.GetFramesPerSecond()
+        rotation_attr.Set(value=new_rotation, time=extension.time)
+        extension.time += duration * extension.GetFramesPerSecond()
 
-    def camera_pull_in(camera_path, pull_distance: float, duration: float = 3):
+    def camera_pull_in(self, extension, pull_distance: float, duration: float = 3):
         """
         
         """
-        stage = omni.usd.get_context().get_stage()
-        camera = stage.GetPrimAtPath(camera_path)
+        camera = extension.stage.GetPrimAtPath(extension.camera_path)
         translation_attr = camera.GetAttribute("xformOp:translate")
         current_translation = translation_attr.Get()
         new_translation = current_translation + Gf.Vec3d(0, 0, pull_distance)
 
         translation_attr.Set(value=current_translation, time=0)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        translation_attr.Set(value=new_translation, time=end_time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+        translation_attr.Set(value=new_translation, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
 
-    def camera_push_out(camera_path, push_distance: float, duration: float = 3):
+    def camera_push_out(self, extension, push_distance: float, duration: float = 3):
         """
         
         """
-        stage = omni.usd.get_context().get_stage()
-        camera = stage.GetPrimAtPath(camera_path)
+        camera = extension.stage.GetPrimAtPath(extension.camera_path)
         translation_attr = camera.GetAttribute("xformOp:translate")
         current_translation = translation_attr.Get()
         new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
-
         translation_attr.Set(value=current_translation, time=0)
 
-        end_time = duration * stage.GetFramesPerSecond()
-        translation_attr.Set(value=new_translation, time=end_time)
-
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+        translation_attr.Set(value=new_translation, time=extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
 
 
 
