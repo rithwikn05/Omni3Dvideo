@@ -6,6 +6,7 @@ import omni.kit.pipapi
 import os
 import re
 import json
+import omni.usd
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ from .UsdMethods.Select import *
 stage = None
 camera = None
 camera_xformable = None
+
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -30,12 +32,15 @@ class Omni3dVideoExtension(omni.ext.IExt):
         super().__init__(**kwargs)
         self.prompt_field = ""
         self.prompt = ""
-        self.stage = Usd.Stage.CreateNew("Omni3DVideoStage.usd")
+        self.stage = omni.usd.get_context().get_stage()
+        assert self.stage
+        # Usd.Stage.CreateNew("Omni3DVideoStage.usd")
         # default_prim = UsdGeom.Xform.Define(self.stage, Sdf.Path("/New_Stage"))
         # self.stage.SetDefaultPrim(default_prim.GetPrim())
 
-        # self.camera = self.stage.DefinePrim('/perspectivecamera', "Camera")
-        # self.camera_xformable = UsdGeom.Xformable(self.camera)
+        self.camera_path = '/perspectivecamera'
+        camera = self.stage.DefinePrim(self.camera_path, "Camera")
+        assert camera
 
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
@@ -80,14 +85,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
     def build_animation(self):
         import re
         curr_time = 0.0
-        self.camera_xformable.SetXformOpOrder([])
-        self.camera_xformable.AddRotateXYZOp()
-        self.camera_xformable.AddTranslateOp()
         from .UsdMethods.ReadObjectsToOmni import processing_gpt_calls, parsing_python_scripts, adding_python_scripts, import_asset, string_to_function_call
         from .UsdMethods.CameraAnimation import camera_zoom_in, camera_zoom_out, camera_pull_in, camera_push_out, camera_pan, camera_roll
         
-        from .Omni3DVideo import Omni3DVideo
-
         adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
         from .UsdMethods.GPTCalls import get_code_from_gpt
         code = processing_gpt_calls(self.prompt_field.model.get_value_as_string())
@@ -103,9 +103,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         print(subject)
 
-        import_asset(stage, subject)
+        import_asset(self, subject)
         
-        string_to_function_call(stage, camera, method, subject)
+        string_to_function_call(self, method, subject)
 
     def render_video(self):
         from .UsdMethods.CaptureVideo import render_video, setup_viewport
