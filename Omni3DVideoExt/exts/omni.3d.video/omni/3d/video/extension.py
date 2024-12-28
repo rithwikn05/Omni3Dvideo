@@ -119,8 +119,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
             string_to_function_call(stage, camera, method, subject)
 
             # TODO: multi-step animations: will something like this work?
-            subjects = ...
-            methods = ...
+            subjects = matches[1::3]
+            methods = matches[2::3]
             for subject in subjects:
                 import_asset(stage, subject)
             for idx, method in enumerate(methods):
