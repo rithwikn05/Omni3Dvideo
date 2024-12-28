@@ -25,19 +25,6 @@ specified movement and generate a python script to do it
 4. Put this script into Omniverse and animate the object
 """
 
-# TODO: commented for deletion
-# def test():
-#     print("hello")
-
-# TODO: commented for deletion
-# def processing_gpt_calls(prompt): # TODO: ermmmmm... this is a wrapper for your own python method from another file!
-#     from ..UsdMethods.GPTCalls import get_code_from_gpt
-
-#     with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
-#         content = file.read()
-#     code = get_code_from_gpt(prompt, content)
-#     return code 
-
 # TODO: what exactly does this do, is it mainly all the animation methods?
 def adding_python_scripts(txt_file_path: str):
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Camera.py", txt_file_path)

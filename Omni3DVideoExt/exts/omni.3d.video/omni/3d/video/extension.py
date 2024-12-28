@@ -44,6 +44,11 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self.prompt_field = "" # ui thing # TODO: maybe dont initialize with "" because it's a bit confusing, eventually it will be a ui.StringField, which isn't the same type of object
         self.prompt = "" # string that actually holds the prompt
 
+        self.camera_path = '\perspectivecamera'
+        camera = stage.DefinePrim(self.camera_path, "Camera")
+        camera_xformable = UsdGeom.Xformable(camera)
+        camera_xformable = camera_xformable.AddTranslateOp()
+        camera_xformable = camera_xformable.AddRotateXYZOp()
 
         self.omni3dvideo = Omni3DVideo() # backend animation stuff
 
@@ -86,12 +91,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
     def convert(self):
         apply_texture_from_file("/New_Stage/army_tank", "C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/downloads/army-tank/textures/cat_image_texture.png")
 
-    def build_animation(self):
-        curr_time = 0.0 # TODO: WARNING: unused local variable
-        self.camera_xformable.SetXformOpOrder([]) # TODO: WARNING, these don't exist anymore!!!
-        self.camera_xformable.AddRotateXYZOp()
-        self.camera_xformable.AddTranslateOp()
-        
+    def build_animation(self):        
         # initializing ParsedCode.txt! 
         # TODO: does this need to be done once per extension loadup, or does it need to be done every time build animation is called? 
         # if its the former, plz move this line to on_startup or __init__

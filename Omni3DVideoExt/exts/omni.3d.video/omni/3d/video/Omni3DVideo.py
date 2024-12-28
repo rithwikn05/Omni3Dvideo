@@ -4,77 +4,66 @@ from omni.timeline import get_timeline_interface
 import math
 import numpy as np
 
-stage = omni.usd.get_context().get_stage()
-camera = None
-camera_xformable = None
-
 class Omni3dVideo():
-    def __init__(self):
-        stage = Usd.Stage.CreateNew("New Stage")
-        camera = stage.DefinePrim('\perspectivecamera', "Camera")
-        camera_xformable = UsdGeom.Xformable(camera)
-        camera_xformable = camera_xformable.AddTranslateOp()
-        camera_xformable = camera_xformable.AddRotateXYZOp()
-
     #######################################################
     ############    Camera Animation Methods    ###########
     #######################################################
     
-    def create_camera_rotate_around_object_animation(stage, camera, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
-        """
-        Create a camera animation that rotates around an object
-        """
-        prim = stage.DefinePrim(prim_path, "Cube")
+    # def create_camera_rotate_around_object_animation(stage, camera, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+    #     """
+    #     Create a camera animation that rotates around an object
+    #     """
+    #     prim = stage.DefinePrim(prim_path, "Cube")
 
-        timeline = get_timeline_interface()
+    #     timeline = get_timeline_interface()
 
-        translate_op = camera_xformable.AddTranslateOp()
-        orient_op = camera_xformable.AddOrientOp()
+    #     translate_op = camera_xformable.AddTranslateOp()
+    #     orient_op = camera_xformable.AddOrientOp()
 
-        # angle_in_radians = math.radians(angle) - math.radians(angle) * 2
+    #     # angle_in_radians = math.radians(angle) - math.radians(angle) * 2
 
-        # matrix: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
-        target_prim_xform_mat = UsdGeom.Xformable(prim).GetLocalTransformation()
-        translate = target_prim_xform_mat.ExtractTranslation()
-        print(translate)
+    #     # matrix: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
+    #     target_prim_xform_mat = UsdGeom.Xformable(prim).GetLocalTransformation()
+    #     translate = target_prim_xform_mat.ExtractTranslation()
+    #     print(translate)
 
-        # z_dist = distance * math.cos(angle_in_radians)
-        # y_dist = distance * math.sin(angle_in_radians)
-        # translation_position = Gf.Vec3f(translate[0], translate[1] - y_dist, translate[2] + z_dist)
+    #     # z_dist = distance * math.cos(angle_in_radians)
+    #     # y_dist = distance * math.sin(angle_in_radians)
+    #     # translation_position = Gf.Vec3f(translate[0], translate[1] - y_dist, translate[2] + z_dist)
 
-        frames_per_second = timeline.get_time_codes_per_seconds()
-        start_time = timeline.get_start_time()
-        end = start_time + (duration * frames_per_second)
+    #     frames_per_second = timeline.get_time_codes_per_seconds()
+    #     start_time = timeline.get_start_time()
+    #     end = start_time + (duration * frames_per_second)
 
-        # new_translation = translation_position
-        up_direction = Gf.Vec3d(0, 1, 0)
-        timeline.pause()
+    #     # new_translation = translation_position
+    #     up_direction = Gf.Vec3d(0, 1, 0)
+    #     timeline.pause()
 
-        for current_time in np.arange(start_time, end, 1/frames_per_second):#int(start_time * frames_per_second), int(end * frames_per_second)):
-            rotation_angle_radians = math.radians(angle * ((current_time - start_time) / duration))
+    #     for current_time in np.arange(start_time, end, 1/frames_per_second):#int(start_time * frames_per_second), int(end * frames_per_second)):
+    #         rotation_angle_radians = math.radians(angle * ((current_time - start_time) / duration))
 
-            new_z_dist = distance * math.cos(rotation_angle_radians)      
-            new_y_dist = distance * math.sin(rotation_angle_radians)
+    #         new_z_dist = distance * math.cos(rotation_angle_radians)      
+    #         new_y_dist = distance * math.sin(rotation_angle_radians)
 
-            new_translation = Gf.Vec3d(translate[0], translate[1] + new_y_dist, translate[2] + new_z_dist)
-            print(new_translation)
-            # print(up_direction)
-            # new_rotation = Gf.Quatf(math.cos(rotation_angle_radians / 2), axis[0] * math.sin(rotation_angle_radians / 2), axis[1] * math.sin(rotation_angle_radians / 2), axis[2] * math.sin(rotation_angle_radians / 2))
+    #         new_translation = Gf.Vec3d(translate[0], translate[1] + new_y_dist, translate[2] + new_z_dist)
+    #         print(new_translation)
+    #         # print(up_direction)
+    #         # new_rotation = Gf.Quatf(math.cos(rotation_angle_radians / 2), axis[0] * math.sin(rotation_angle_radians / 2), axis[1] * math.sin(rotation_angle_radians / 2), axis[2] * math.sin(rotation_angle_radians / 2))
             
-            look_at = Gf.Matrix4d(1.0)
-            print(look_at)
-            look_at = look_at.SetLookAt(new_translation, translate, up_direction)       
-            new_rotation = look_at.ExtractRotation().GetQuat()
-            new_rotation = Gf.Quatf(new_rotation)
+    #         look_at = Gf.Matrix4d(1.0)
+    #         print(look_at)
+    #         look_at = look_at.SetLookAt(new_translation, translate, up_direction)       
+    #         new_rotation = look_at.ExtractRotation().GetQuat()
+    #         new_rotation = Gf.Quatf(new_rotation)
 
-            timeline.set_current_time(current_time)
+    #         timeline.set_current_time(current_time)
 
-            translate_op.Set(new_translation)
-            orient_op.Set(new_rotation)
+    #         translate_op.Set(new_translation)
+    #         orient_op.Set(new_rotation)
             
-        timeline.set_auto_update(True)
-        timeline.set_start_time(start_time)
-        timeline.set_end_time(end)
+    #     timeline.set_auto_update(True)
+    #     timeline.set_start_time(start_time)
+    #     timeline.set_end_time(end)
 
     def camera_zoom_in(stage, camera, zoom_ratio: float = 2.0, duration: float = 3):
         """
