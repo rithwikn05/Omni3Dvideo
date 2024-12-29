@@ -127,7 +127,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
         if subjects and methods:
             # print(matches)
 
+            print("zip(subjects, methods): ", zip(subjects, methods))
             for match in zip(subjects, methods):
+                print("self.time: ", self.time)
                 subject = match[0].strip()
                 method = match[1].strip()
 
@@ -139,7 +141,6 @@ class Omni3dVideoExtension(omni.ext.IExt):
         else:
             print("[WARNING] Something went wrong, could not parse GPT response") # TODO: promote to error status?
 
-        # print(subject)
 
     def render_video(self):
         from .UsdMethods.CaptureVideo import render_video, setup_viewport

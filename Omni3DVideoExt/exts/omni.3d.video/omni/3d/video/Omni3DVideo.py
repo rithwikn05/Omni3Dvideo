@@ -66,7 +66,7 @@ class Omni3DVideo():
     #     timeline.set_start_time(start_time)
     #     timeline.set_end_time(end)
 
-    def camera_zoom_in(self, extension, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_in(extension, zoom_ratio: float = 2.0, duration: float = 3):
         """
         Create a camera zoom in animation
 
@@ -75,6 +75,7 @@ class Omni3DVideo():
             zoom_ratio (float): the ratio of the zoom
             duration (float): the duration of the animation in seoconds
         """
+        print("In camera_zoom_in function")
         # stage = omni.usd.get_context().get_stage()
         camera = extension.stage.GetPrimAtPath(extension.camera_path)
         focal_length_attr = camera.GetAttribute("focalLength")
@@ -83,11 +84,13 @@ class Omni3DVideo():
 
         focal_length_attr.Set(value=current_focal_length, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
+        print("initial extension.time: ", extension.time)
         focal_length_attr.Set(value=new_focal_length, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
+        print("final extension.time: ", extension.time)
 
 
-    def camera_zoom_out(self, extension, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_out(extension, zoom_ratio: float = 2.0, duration: float = 3):
         """
         Create a camera zoom out animation
         # Args:
@@ -95,6 +98,7 @@ class Omni3DVideo():
         #     zoom_ratio (float): the ratio of the zoom
         #     duration (float): the duration of the animation in seoconds
         """
+        print("In camera_zoom_out function")
         # stage = omni.usd.get_context().get_stage()
         camera = extension.stage.GetPrimAtPath(extension.camera_path)
         focal_length_attr = camera.GetAttribute("focalLength")
@@ -103,10 +107,13 @@ class Omni3DVideo():
 
         focal_length_attr.Set(value=current_focal_length, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
+        print("initial extension.time: ", extension.time)
         focal_length_attr.Set(value=new_focal_length, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
+        print("final extension.time: ", extension.time)
 
-    def camera_pan(self, extension, pan_distance: Gf.Vec2f, duration: float = 3):
+
+    def camera_pan(extension, pan_distance: Gf.Vec2f, duration: float = 3):
         """
         Create a camera pan horizontal or vertical animation
         """
@@ -121,7 +128,7 @@ class Omni3DVideo():
         extension.time += duration * extension.stage.GetFramesPerSecond()
 
 
-    def camera_roll(self, extension, roll_angle: float, duration: float = 3):
+    def camera_roll(extension, roll_angle: float, duration: float = 3):
         """
         
         """
@@ -144,7 +151,7 @@ class Omni3DVideo():
         rotation_attr.Set(value=new_rotation, time=extension.time)
         extension.time += duration * extension.GetFramesPerSecond()
 
-    def camera_pull_in(self, extension, pull_distance: float, duration: float = 3):
+    def camera_pull_in(extension, pull_distance: float, duration: float = 3):
         """
         
         """
@@ -158,7 +165,7 @@ class Omni3DVideo():
         translation_attr.Set(value=new_translation, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
 
-    def camera_push_out(self, extension, push_distance: float, duration: float = 3):
+    def camera_push_out(extension, push_distance: float, duration: float = 3):
         """
         
         """

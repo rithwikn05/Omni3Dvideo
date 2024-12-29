@@ -39,7 +39,7 @@ def adding_python_scripts(txt_file_path: str):
 
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Animation.py", txt_file_path)
 
-    parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/CameraAnimation.py", txt_file_path)
+    parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/Omni3DVideo.py", txt_file_path)
 
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/CreateGeometry.py", txt_file_path)
 
