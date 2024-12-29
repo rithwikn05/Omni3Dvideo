@@ -40,9 +40,9 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
         self.camera_path = '/perspectivecamera'
         camera = self.stage.DefinePrim(self.camera_path, "Camera")
-        camera_xformable = UsdGeom.Xformable(camera)
-        camera_xformable = camera_xformable.AddTranslateOp()
-        camera_xformable = camera_xformable.AddRotateXYZOp()
+        # camera_xformable = UsdGeom.Xformable(camera)
+        # camera_xformable = camera_xformable.AddTranslateOp()
+        # camera_xformable = camera_xformable.AddRotateXYZOp()
         assert camera
         self.time = 0.0
 
@@ -89,24 +89,47 @@ class Omni3dVideoExtension(omni.ext.IExt):
     def build_animation(self):
         import re
         from .UsdMethods.ReadObjectsToOmni import adding_python_scripts, import_asset, string_to_function_call
+        from .UsdMethods.GPTCalls import get_code_from_gpt
 
         adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
 
         with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
             content = file.read() # TODO: You do realize lol, you just wrote this content to the file on the previous line... and now you're immediately reading it back. there was no point in storing it in the file in the first place, just return the string from the grab_python_scripts method. OR, take that string and store it somewhere in memory (either RAM or file system) and use it directly, rather than do all this funny business.
-        code = self.gpt_coder.get_code(self.prompt_field.model.get_value_as_string(), content)
-        print(code)
+        gpt_output = get_code_from_gpt(self.prompt_field.model.get_value_as_string(), content)
+        print("GPT Output: ", gpt_output)
         
-        pattern = r'Action:\s*(.*?)\s*\n.*?Subject:\s*(.*?)\s*\n'
-        #r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
+        # pattern = r'\d+\.\s*(.*?)\s*\(.*?\)\s*.*?Methods:\s*[\s\S]*?\d+\.\s*([a-zA-Z_]+)'
+        # #r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
+        # subject_pattern = r'Subjects:\s*(?:\d+\.\s*(.*?)(?:\s*\(.*?\))?\s*)+'
+        # method_pattern = r'Methods:\s*(?:\d+\.\s*([a-zA-Z_]+)\(.*?\)\s*)+'
     
-        matches = re.findall(pattern, code)
-        if matches:
-            print(matches)
+        # subejct_matches = re.findall(r'\d+\.\s*(.*?)(?:\s*\(.*?\))?', re.search(subject_pattern, gpt_output))
+        # method_matches = re.findall(r'\d+\.\s*([a-zA-Z_]+)\(.*?\)', re.search(method_pattern, gpt_output))
+        # print("subejct_matches: ", subejct_matches)
+        # print("method_matches: ", method_matches)
 
-            for match in matches:
-                method = match[0].strip()
-                subject = match[1].strip()
+        mode = None
+        actions = []
+        subjects = []
+        methods = []
+        mode = None
+        for line in gpt_output.split("\n"):
+            if "Action" in line: mode = "action"
+            elif "Subject" in line: mode = "subject"
+            elif "Method" in line: mode = "method"
+            elif mode == "action": actions.append(line.split()[1].lower())
+            elif mode == "subject": subjects.append(line.split()[1].lower())
+            elif mode == "method": methods.append(line[3:].lower()) 
+            print("line: ", line)
+        print("subjects: ", subjects)
+        print("methods: ", methods)
+
+        if subjects and methods:
+            # print(matches)
+
+            for match in zip(subjects, methods):
+                subject = match[0].strip()
+                method = match[1].strip()
 
                 print(f"Processing Subject: {subject}, Method: {method}")
 
@@ -116,7 +139,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         else:
             print("[WARNING] Something went wrong, could not parse GPT response") # TODO: promote to error status?
 
-        print(subject)
+        # print(subject)
 
     def render_video(self):
         from .UsdMethods.CaptureVideo import render_video, setup_viewport

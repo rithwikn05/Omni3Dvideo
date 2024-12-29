@@ -34,7 +34,7 @@ def get_code_from_gpt(prompt, omniverse_code):
                 },
                 {
                     "role": "user",
-                    "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify a sequence of actions to be performed (e.g., zoom, pan). 2. Identify the subject of each action (e.g., battery, screen). 3. Match each identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the list of identified actions, subjects, and corresponding methods in your response all in seperate lines." # TODO: update for few-shot prompting
+                    "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify a sequence of actions to be performed (e.g., zoom, pan). 2. Identify the subject of each action (e.g., battery, screen). 3. Match each identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the list of identified actions, subjects, and corresponding methods in your response all in seperate lines. Here are some examples:\n Instructions: 'Zoom into an armchair by 5 units for 10 seconds. Zoom out of an armchair by 5 units for 10 seconds' Your Output: 'Actions:\n1. Zoom in\n2. Zoom out\nSubjects:\n1. Armchair\n2. Armchair\nMethods:\n1. camera_zoom_in(camera_path='armchair', zoom_ratio=5, duration=10)\n2. camera_zoom_in(camera_path='armchair', zoom_ratio=5, duration=10)'" # TODO: update for few-shot prompting
                 }
             ]
         }

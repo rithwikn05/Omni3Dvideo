@@ -154,7 +154,6 @@ class Omni3DVideo():
         new_translation = current_translation + Gf.Vec3d(0, 0, pull_distance)
 
         translation_attr.Set(value=current_translation, time=0)
-
         extension.time += duration * extension.stage.GetFramesPerSecond()
         translation_attr.Set(value=new_translation, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
