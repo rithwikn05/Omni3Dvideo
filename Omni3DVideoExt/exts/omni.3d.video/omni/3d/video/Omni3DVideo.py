@@ -112,7 +112,6 @@ class Omni3DVideo():
         extension.time += duration * extension.stage.GetFramesPerSecond()
         print("final extension.time: ", extension.time)
 
-
     def camera_pan(extension, pan_distance: Gf.Vec2f, duration: float = 3):
         """
         Create a camera pan horizontal or vertical animation
