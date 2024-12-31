@@ -7,6 +7,7 @@ import os
 import re
 import json
 import omni.usd
+import omni.timeline
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # camera_xformable = camera_xformable.AddRotateXYZOp()
         assert camera
         self.time = 0.0
+        self.timeline = omni.timeline.get_timeline_interface()
+
 
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
@@ -120,7 +123,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
             elif mode == "action": actions.append(line.split()[1].lower())
             elif mode == "subject": subjects.append(line.split()[1].lower())
             elif mode == "method": methods.append(line[3:].lower()) 
-            print("line: ", line)
+            # print("line: ", line)
         print("subjects: ", subjects)
         print("methods: ", methods)
 
