@@ -129,6 +129,7 @@ def apply_texture_from_file(prim_path: str, texture_path: str) -> None:
     diffuse_texture_in.GetAttr().SetColorSpace("sRGB")
 
     # Bind the material to the prim
+    print("prim path: ", prim_path)
     UsdShade.MaterialBindingAPI(stage.GetPrimAtPath(prim_path)).Bind(mtl, UsdShade.Tokens.strongerThanDescendants)
 
     

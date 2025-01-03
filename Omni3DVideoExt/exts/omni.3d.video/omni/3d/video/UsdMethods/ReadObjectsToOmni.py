@@ -69,6 +69,7 @@ def string_to_function_call(extension, func_string, prompt):
                 key, value = arg.split('=')
                 print("key", key)
                 print("value", value)
+
                 kwargs[key.strip()] = ast.literal_eval(value.strip())
             else:
                 if args == "camera_path: str":

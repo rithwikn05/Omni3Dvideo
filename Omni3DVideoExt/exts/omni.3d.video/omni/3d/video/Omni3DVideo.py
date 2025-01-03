@@ -7,7 +7,7 @@ import numpy as np
 
 class Omni3DVideo():
     #######################################################
-    ############    Camera Animation Methods    ###########
+    #               Camera Animation Methods              #
     #######################################################
 
     # def create_camera_rotate_around_object_animation(stage, camera, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
@@ -82,13 +82,14 @@ class Omni3DVideo():
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length * zoom_ratio
 
+        print("initial extension.time: ", extension.time)
         focal_length_attr.Set(value=current_focal_length, time=extension.time)
         extension.timeline.set_start_time(extension.time)
-        extension.time += duration * extension.stage.GetFramesPerSecond()
-        print("initial extension.time: ", extension.time)
+        extension.time += duration
+        
         focal_length_attr.Set(value=new_focal_length, time=extension.time)
         extension.timeline.set_end_time(extension.time)
-        # extension.time += duration * extension.stage.GetFramesPerSecond()
+        extension.timeline.play()
         print("final extension.time: ", extension.time)
 
 
@@ -101,20 +102,21 @@ class Omni3DVideo():
         #     duration (float): the duration of the animation in seoconds
         """
         print("In camera_zoom_out function")
-        # extension.time = 1
+        # extension.time += 1
         # stage = omni.usd.get_context().get_stage()
         camera = extension.stage.GetPrimAtPath(extension.camera_path)
         focal_length_attr = camera.GetAttribute("focalLength")
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length / zoom_ratio
-
+        
+        print("initial extension.time: ", extension.time)
         focal_length_attr.Set(value=current_focal_length, time=extension.time)
         extension.timeline.set_start_time(extension.time)
-        extension.time += duration * extension.stage.GetFramesPerSecond()
-        print("initial extension.time: ", extension.time)
+        extension.time += duration
+
         focal_length_attr.Set(value=new_focal_length, time=extension.time)
         extension.timeline.set_end_time(extension.time)
-        # extension.time += duration * extension.stage.GetFramesPerSecond()
+        extension.timeline.play()
         print("final extension.time: ", extension.time)
 
     def camera_pan(extension, pan_distance: Gf.Vec2f, duration: float = 3):
@@ -127,7 +129,7 @@ class Omni3DVideo():
         new_translation = Gf.Vec3f(current_orientation[0] + pan_distance[0], current_orientation[1], current_orientation[2] + pan_distance[1])
 
         pan_attr.Set(value=current_orientation, time=extension.time)
-        extension.time += duration * extension.stage.GetFramesPerSecond()
+        extension.time += duration# * extension.stage.GetFramesPerSecond()
         pan_attr.Set(value=new_translation, time=extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
 
@@ -157,37 +159,110 @@ class Omni3DVideo():
 
     def camera_pull_in(extension, pull_distance: float, duration: float = 3):
         """
-        
+        Move towards a prim using a translation
         """
-        camera = extension.stage.GetPrimAtPath(extension.camera_path)
-        translation_attr = camera.GetAttribute("xformOp:translate")
+        translation_attr = extension.translateOp
         current_translation = translation_attr.Get()
-        new_translation = current_translation + Gf.Vec3d(0, 0, pull_distance)
+        new_translation = current_translation + Gf.Vec3d(0, 0, -pull_distance)
+        
+        translation_attr.Set(value=current_translation, time=extension.time)
+        extension.timeline.set_start_time(extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
 
-        translation_attr.Set(value=current_translation, time=0)
-        extension.time += duration * extension.stage.GetFramesPerSecond()
         translation_attr.Set(value=new_translation, time=extension.time)
-        extension.time += duration * extension.stage.GetFramesPerSecond()
+        extension.timeline.set_end_time(extension.time)
 
     def camera_push_out(extension, push_distance: float, duration: float = 3):
         """
+        Move away from a prim using a translation
+        """
+        translation_attr = extension.translateOp
+        current_translation = translation_attr.Get(extension.time)
+        new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
+
+        translation_attr.Set(value=current_translation, time=extension.time)
+        extension.timeline.set_start_time(extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+
+        translation_attr.Set(value=new_translation, time=extension.time)
+        extension.timeline.set_end_time(extension.time)
+
+
+
+    #######################################################
+    #                   Animation Methods                 #
+    #######################################################
+
+    def prim_translate(extension, direction: str, prim_path: str, distance: float, duration: float = 3):
+        """
+        Translate a prim up, down, left, right, forward, or backward
+        """
+        prim = extension.stage.GetPrimAtPath(prim_path)
+        prim_attr = UsdGeom.Xformable(prim)
+
+        translate_attr = next(
+            (op for op in prim_attr.GetOrderedXformOps() if op.GetOpType() == UsdGeom.XformOp.TypeTranslate),
+            None
+        )
+        if not translate_attr:
+            translate_attr = prim_attr.AddTranslateOp()
+
+        initial_translation = Gf.Vec3d(0, 0, 0)
+        translate_attr.Set(initial_translation)
+        current_translation = translate_attr.Get()
+
+        if direction == "up":
+            new_translation = current_translation + Gf.Vec3d(0, distance, 0)
+        elif direction == "down":
+            new_translation = current_translation + Gf.Vec3d(0, -distance, 0)
+        elif direction == "left":
+            new_translation = current_translation + Gf.Vec3d(-distance, 0, 0)
+        elif direction == "right":
+            new_translation = current_translation + Gf.Vec3d(distance, 0, 0)
+        elif direction == "forward":
+            new_translation = current_translation + Gf.Vec3d(0, 0, distance)
+        elif direction == "backward":
+            new_translation = current_translation + Gf.Vec3d(0, 0, -distance)
+        
+        translate_attr.Set(value=current_translation, time=extension.time)
+        extension.timeline.set_start_time(extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+
+        translate_attr.Set(value=new_translation, time=extension.time)
+        extension.timeline.set_end_time(extension.time)
+
+    def prim_roll(extension, prim_path: str, roll_angle: float, duration: float = 3):
+        """
         
         """
-        camera = extension.stage.GetPrimAtPath(extension.camera_path)
-        translation_attr = camera.GetAttribute("xformOp:translate")
-        current_translation = translation_attr.Get()
-        new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
-        translation_attr.Set(value=current_translation, time=0)
+        prim = extension.stage.GetPrimAtPath(prim_path)
+        prim_attr = UsdGeom.Xformable(prim)
+        axis = Gf.Vec3d(0, 0, 1).GetNormalized()
 
+        rotation_attr = next(
+            (op for op in prim_attr.GetOrderedXformOps() if op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ),
+            None
+        )
+        if not rotation_attr:
+            rotation_attr = prim_attr.AddRotateXYZOp()
+
+        initial_rotation = Gf.Vec3d(0.0, 0.0, 0.0)
+        rotation_attr.Set(initial_rotation)
+        current_rotation = rotation_attr.Get()
+        
+        print(current_rotation)
+        if current_rotation is None:
+            new_rotation = Gf.Vec3d(axis[0] * roll_angle, axis[1] * roll_angle, axis[2] * roll_angle)
+            rotation_attr.Set(value = initial_rotation, time = extension.time)
+        else:
+            new_rotation = Gf.Vec3d(current_rotation[0] + axis[0] * roll_angle, current_rotation[1] + axis[1] * roll_angle, current_rotation[1] + axis[2] * roll_angle)
+            rotation_attr.Set(value = current_rotation, time = extension.time)
+
+        extension.timeline.set_start_time(extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
-        translation_attr.Set(value=new_translation, time=extension.time)
-        extension.time += duration * extension.stage.GetFramesPerSecond()
 
-
-
-    #######################################################
-    ###############    Animation Methods    ###############
-    #######################################################
+        rotation_attr.Set(value=new_rotation, time=extension.time)
+        extension.timeline.set_end_time(extension.time)
 
     def keyframe(stage, camera, prim_path: str, attribute_path: str, time: float, value: float) -> None:
         """
