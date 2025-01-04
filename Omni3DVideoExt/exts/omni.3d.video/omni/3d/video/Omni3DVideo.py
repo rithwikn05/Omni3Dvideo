@@ -161,30 +161,45 @@ class Omni3DVideo():
         """
         Move towards a prim using a translation
         """
-        translation_attr = extension.translateOp
-        current_translation = translation_attr.Get()
+        camera_translation_attr = extension.translateOp
+        current_translation = camera_translation_attr.Get()
         new_translation = current_translation + Gf.Vec3d(0, 0, -pull_distance)
         
-        translation_attr.Set(value=current_translation, time=extension.time)
+        camera_translation_attr.Set(value=current_translation, time=extension.time)
         extension.timeline.set_start_time(extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
 
-        translation_attr.Set(value=new_translation, time=extension.time)
+        camera_translation_attr.Set(value=new_translation, time=extension.time)
         extension.timeline.set_end_time(extension.time)
 
     def camera_push_out(extension, push_distance: float, duration: float = 3):
         """
         Move away from a prim using a translation
         """
-        translation_attr = extension.translateOp
-        current_translation = translation_attr.Get(extension.time)
+        camera_translation_attr = extension.translateOp
+        current_translation = camera_translation_attr.Get(extension.time)
         new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
 
-        translation_attr.Set(value=current_translation, time=extension.time)
+        camera_translation_attr.Set(value=current_translation, time=extension.time)
         extension.timeline.set_start_time(extension.time)
         extension.time += duration * extension.stage.GetFramesPerSecond()
 
-        translation_attr.Set(value=new_translation, time=extension.time)
+        camera_translation_attr.Set(value=new_translation, time=extension.time)
+        extension.timeline.set_end_time(extension.time)
+    
+    def camera_push_up(extension, push_distance: float, duration: float = 3):
+        """
+        Move away from a prim using a translation
+        """
+        camera_translation_attr = extension.translateOp
+        current_translation = camera_translation_attr.Get(extension.time)
+        new_translation = current_translation + Gf.Vec3d(0, push_distance, 0)
+
+        camera_translation_attr.Set(value=current_translation, time=extension.time)
+        extension.timeline.set_start_time(extension.time)
+        extension.time += duration * extension.stage.GetFramesPerSecond()
+
+        camera_translation_attr.Set(value=new_translation, time=extension.time)
         extension.timeline.set_end_time(extension.time)
 
 
@@ -231,13 +246,18 @@ class Omni3DVideo():
         translate_attr.Set(value=new_translation, time=extension.time)
         extension.timeline.set_end_time(extension.time)
 
-    def prim_roll(extension, prim_path: str, roll_angle: float, duration: float = 3):
+    def prim_roll(extension, rotation_axis: str, prim_path: str, roll_angle: float, duration: float = 3):
         """
         
         """
         prim = extension.stage.GetPrimAtPath(prim_path)
         prim_attr = UsdGeom.Xformable(prim)
-        axis = Gf.Vec3d(0, 0, 1).GetNormalized()
+        if rotation_axis == 'Y':
+            axis = Gf.Vec3d(0, 1, 0).GetNormalized()
+        elif rotation_axis == 'X':
+            axis = Gf.Vec3d(1, 0, 0).GetNormalized()
+        elif rotation_axis == 'Z':
+            axis = Gf.Vec3d(0, 0, 1).GetNormalized()
 
         rotation_attr = next(
             (op for op in prim_attr.GetOrderedXformOps() if op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ),

@@ -124,7 +124,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self.camera_xformable.SetXformOpOrder([])
 
         self.translateOp = self.camera_xformable.AddTranslateOp()
-        initial_translation = Gf.Vec3d(0, 100, 500)
+        initial_translation = Gf.Vec3d(0, 100, 1000)
         self.translateOp.Set(initial_translation)
 
         self.rotateXYZOp = self.camera_xformable.AddRotateXYZOp()
@@ -143,11 +143,13 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # print("subjects: ", subjects)
         # print("methods: ", methods)
 
-        subjects = ["armchair", "armchair", "armchair"]
+        subjects = ["armchair", "armchair", "armchair", "armchair"]
         # methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_out(push_distance=100, duration=20)"]
         # methods = ["camera_zoom_in(zoom_ratio=5, duration=10)", "camera_zoom_out(zoom_ratio=5, duration=10)"]
-        methods = ["camera_pull_in(pull_distance=100, duration=20)", "prim_translate(direction='up', prim_path = '/New_Stage/armchair', distance=100, duration=4)",
-                   "prim_roll(prim_path = '/New_Stage/armchair', roll_angle = 360, duration=10)"]
+        # methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_up(pull_distance=50, duration=20)"]
+        methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_up(pull_distance=50, duration=20)",
+                   "prim_translate(direction='up', prim_path = '/New_Stage/armchair', distance=100, duration=20)",
+                   "prim_roll(rotation_axis = 'Z', prim_path = '/New_Stage/armchair', roll_angle = 360, duration=10)"]
         # Translate a soda-can up 100 units for 10 seconds. Rotate a soda-can by 360 degrees for 10 seconds. Zoom into the soda can by 100 units for 10 seconds.
 
         print("Stage start time code ", self.stage.GetStartTimeCode())
@@ -170,7 +172,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         else:
             print("[WARNING] Something went wrong, could not parse GPT response") # TODO: promote to error status?
         
-        self.timeline.set_end_time(20)
+        self.timeline.set_end_time(70)
         self.time = 0
         self.timeline.set_start_time(0.0)
 
