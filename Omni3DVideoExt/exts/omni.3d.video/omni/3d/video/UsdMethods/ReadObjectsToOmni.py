@@ -34,17 +34,11 @@ specified movement and generate a python script to do it
 
 def adding_python_scripts(txt_file_path: str):
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Camera.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Transform.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Animation.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/Omni3DVideo.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/CreateGeometry.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Select.py", txt_file_path)
-
     parsing_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/Material.py", txt_file_path)
 
 def string_to_function_call(extension, func_string, prompt):
@@ -72,8 +66,8 @@ def string_to_function_call(extension, func_string, prompt):
 
                 kwargs[key.strip()] = ast.literal_eval(value.strip())
             else:
-                if args == "camera_path: str":
-                    print(f"/New_Stage/{prompt}")
+                if args == "camera_path: str": # TODO: remove, this is never true because args is always []
+                    print(f"/New_Stage/{prompt}") 
                     args.append(f"/New_Stage/{prompt}")
     print("args", args)
     print("kwargs", kwargs)

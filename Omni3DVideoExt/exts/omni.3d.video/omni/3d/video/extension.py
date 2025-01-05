@@ -84,8 +84,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         from .UsdMethods.Material import generate_texture
         print(self.prompt_field.model.get_value_as_string())
         import_asset(self.prompt_field.model.get_value_as_string())
-        generate_texture("/New_Stage/army_tank")
-       
+        generate_texture("/New_Stage/army_tank")  
 
     def convert(self):
         from .UsdMethods.Material import generate_texture, apply_texture_from_file

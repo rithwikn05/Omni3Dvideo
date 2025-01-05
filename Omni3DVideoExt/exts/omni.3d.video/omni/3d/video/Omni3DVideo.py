@@ -66,7 +66,7 @@ class Omni3DVideo():
     #     timeline.set_start_time(start_time)
     #     timeline.set_end_time(end)
 
-    def camera_zoom_in(extension, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_in(extension, zoom_ratio: float = 2.0, duration: float = 3, start: float = None):
         """
         Create a camera zoom in animation
 
@@ -83,17 +83,17 @@ class Omni3DVideo():
         new_focal_length = current_focal_length * zoom_ratio
 
         print("initial extension.time: ", extension.time)
-        focal_length_attr.Set(value=current_focal_length, time=extension.time)
-        extension.timeline.set_start_time(extension.time)
-        extension.time += duration
+        focal_length_attr.Set(value=current_focal_length, time=start if start else extension.time)
+        extension.timeline.set_start_time(start if start else extension.time) # TODO: wait, I don't think we want to do this yet.
+        if not start: extension.time += duration
         
-        focal_length_attr.Set(value=new_focal_length, time=extension.time)
+        focal_length_attr.Set(value=new_focal_length, time=start+duration if start else extension.time)
         extension.timeline.set_end_time(extension.time)
         extension.timeline.play()
         print("final extension.time: ", extension.time)
 
 
-    def camera_zoom_out(extension, zoom_ratio: float = 2.0, duration: float = 3):
+    def camera_zoom_out(extension, zoom_ratio: float = 2.0, duration: float = 3, start: float = None):
         """
         Create a camera zoom out animation
         # Args:
@@ -119,7 +119,7 @@ class Omni3DVideo():
         extension.timeline.play()
         print("final extension.time: ", extension.time)
 
-    def camera_pan(extension, pan_distance: Gf.Vec2f, duration: float = 3):
+    def camera_pan(extension, pan_distance: Gf.Vec2f, duration: float = 3, start: float = None):
         """
         Create a camera pan horizontal or vertical animation
         """
@@ -134,7 +134,7 @@ class Omni3DVideo():
         extension.time += duration * extension.stage.GetFramesPerSecond()
 
 
-    def camera_roll(extension, roll_angle: float, duration: float = 3):
+    def camera_roll(extension, roll_angle: float, duration: float = 3, start: float = None):
         """
         
         """
@@ -157,7 +157,7 @@ class Omni3DVideo():
         rotation_attr.Set(value=new_rotation, time=extension.time)
         extension.time += duration * extension.GetFramesPerSecond()
 
-    def camera_pull_in(extension, pull_distance: float, duration: float = 3):
+    def camera_pull_in(extension, pull_distance: float, duration: float = 3, start: float = None):
         """
         Move towards a prim using a translation
         """
@@ -172,7 +172,7 @@ class Omni3DVideo():
         camera_translation_attr.Set(value=new_translation, time=extension.time)
         extension.timeline.set_end_time(extension.time)
 
-    def camera_push_out(extension, push_distance: float, duration: float = 3):
+    def camera_push_out(extension, push_distance: float, duration: float = 3, start: float = None):
         """
         Move away from a prim using a translation
         """
@@ -187,7 +187,7 @@ class Omni3DVideo():
         camera_translation_attr.Set(value=new_translation, time=extension.time)
         extension.timeline.set_end_time(extension.time)
     
-    def camera_push_up(extension, push_distance: float, duration: float = 3):
+    def camera_push_up(extension, push_distance: float, duration: float = 3, start: float = None):
         """
         Move away from a prim using a translation
         """
@@ -208,7 +208,7 @@ class Omni3DVideo():
     #                   Animation Methods                 #
     #######################################################
 
-    def prim_translate(extension, direction: str, prim_path: str, distance: float, duration: float = 3):
+    def prim_translate(extension, direction: str, prim_path: str, distance: float, duration: float = 3, start: float = None):
         """
         Translate a prim up, down, left, right, forward, or backward
         """
@@ -246,7 +246,7 @@ class Omni3DVideo():
         translate_attr.Set(value=new_translation, time=extension.time)
         extension.timeline.set_end_time(extension.time)
 
-    def prim_roll(extension, rotation_axis: str, prim_path: str, roll_angle: float, duration: float = 3):
+    def prim_roll(extension, rotation_axis: str, prim_path: str, roll_angle: float, duration: float = 3, start: float = None):
         """
         
         """
