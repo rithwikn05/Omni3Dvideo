@@ -47,9 +47,14 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # camera_xformable = camera_xformable.AddRotateXYZOp()
         
         assert self.camera
-        self.time = 0.0#self.stage.GetStartTimeCode()#.GetValue()
+        self.time = 0.0 #self.stage.GetStartTimeCode()#.GetValue()
         self.timeline = omni.timeline.get_timeline_interface()
         self.timeline.set_start_time(0.0)
+        focal_length_attr = self.camera.GetAttribute("focalLength")
+        current_focal_length = focal_length_attr.Get()
+        new_focal_length = current_focal_length / 2
+        print("new_focal_length: ", new_focal_length)
+        focal_length_attr.Set(value=new_focal_length)
 
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
@@ -92,15 +97,15 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
     def build_animation(self):
         import re
-        from .UsdMethods.ReadObjectsToOmni import adding_python_scripts, import_asset, string_to_function_call
+        from .UsdMethods.ReadObjectsToOmni import adding_python_scripts, string_to_function_call
         from .UsdMethods.GPTCalls import get_code_from_gpt
 
         adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
 
         with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
             content = file.read() # TODO: You do realize lol, you just wrote this content to the file on the previous line... and now you're immediately reading it back. there was no point in storing it in the file in the first place, just return the string from the grab_python_scripts method. OR, take that string and store it somewhere in memory (either RAM or file system) and use it directly, rather than do all this funny business.
-        # gpt_output = get_code_from_gpt(self.prompt_field.model.get_value_as_string(), content)
-        # print("GPT Output: ", gpt_output)
+        gpt_output = get_code_from_gpt(self.prompt_field.model.get_value_as_string(), content)
+        print("GPT Output: ", gpt_output)
         
         # pattern = r'\d+\.\s*(.*?)\s*\(.*?\)\s*.*?Methods:\s*[\s\S]*?\d+\.\s*([a-zA-Z_]+)'
         # #r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
@@ -111,19 +116,18 @@ class Omni3dVideoExtension(omni.ext.IExt):
         # method_matches = re.findall(r'\d+\.\s*([a-zA-Z_]+)\(.*?\)', re.search(method_pattern, gpt_output))
         # print("subejct_matches: ", subejct_matches)
         # print("method_matches: ", method_matches)
-
         
         mode = None
         actions = []
         subjects = []
         methods = []
         mode = None
-
+            
         #Reset the xformable order
         self.camera_xformable.SetXformOpOrder([])
 
         self.translateOp = self.camera_xformable.AddTranslateOp()
-        initial_translation = Gf.Vec3d(0, 100, 1000)
+        initial_translation = Gf.Vec3d(0, 100, 500)
         self.translateOp.Set(initial_translation)
 
         self.rotateXYZOp = self.camera_xformable.AddRotateXYZOp()
@@ -131,25 +135,32 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self.rotateXYZOp.Set(initial_rotation)
         
 
-        # for line in gpt_output.split("\n"):
-        #     if "Action" in line: mode = "action"
-        #     elif "Subject" in line: mode = "subject"
-        #     elif "Method" in line: mode = "method"
-        #     elif mode == "action": actions.append(line.split()[1].lower())
-        #     elif mode == "subject": subjects.append(line.split()[1].lower())
-        #     elif mode == "method": methods.append(line[3:].lower()) 
-        #     # print("line: ", line)
-        # print("subjects: ", subjects)
-        # print("methods: ", methods)
+        for line in gpt_output.split("\n"):
+            if "Action" in line: mode = "action"
+            elif "Subject" in line: mode = "subject"
+            elif "Method" in line: mode = "method"
+            elif mode == "action": actions.append(line.split()[1].lower())
+            elif mode == "subject": subjects.append(line.split()[1].lower())
+            elif mode == "method": methods.append(line[3:].lower()) 
+            # print("line: ", line)
+        print("subjects: ", subjects)
+        print("methods: ", methods)
 
-        subjects = ["armchair", "armchair", "armchair", "armchair"]
+        # subjects = ["armchair", "alarm-clock"]
         # methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_out(push_distance=100, duration=20)"]
         # methods = ["camera_zoom_in(zoom_ratio=5, duration=10)", "camera_zoom_out(zoom_ratio=5, duration=10)"]
         # methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_up(pull_distance=50, duration=20)"]
-        methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_up(pull_distance=50, duration=20)",
-                   "prim_translate(direction='up', prim_path = '/New_Stage/armchair', distance=100, duration=20)",
-                   "prim_roll(rotation_axis = 'Z', prim_path = '/New_Stage/armchair', roll_angle = 360, duration=10)"]
-        # Translate a soda-can up 100 units for 10 seconds. Rotate a soda-can by 360 degrees for 10 seconds. Zoom into the soda can by 100 units for 10 seconds.
+        # methods = ["camera_pull_in(pull_distance=100, duration=20)", "camera_push_up(pull_distance=50, duration=20)",
+        #            "prim_translate(direction='up', prim_path = '/New_Stage/armchair', distance=100, duration=20, start=10)",
+        #            "prim_roll(rotation_axis = 'Z', prim_path = '/New_Stage/armchair', roll_angle = 360, duration=10)"]
+        
+        # prompt: Import armchair. Import alarm-clock. Pull into an armchair by 300 units for 4 seconds. Make the alarm clock rotate along by 360 degrees for 4 seconds and start after 0 seconds. Push up from an armchair by 500 units for 4 seconds. Translate the armchair up 500 units for 4 seconds and start after 4 seconds. Place a light called MrLight with intensity of 1000 with color blue pointing at armchair. Place background around armchair with pink.
+
+        # Zoom into an armchair by 5 units for 10 seconds. Place lighting called MrLight with intensity of 1000 pointing at armchair. Place background around armchair.
+        
+        # methods = ["place_lighting(light_name = 'MrLight')", "background()"]
+        #"place_lighting(light_name = 'MrLight')"
+        # Place the soda-can at [x, y, z]. Place the camera at [x, y, z]. Translate a soda-can up 100 units for 10 seconds. Rotate a soda-can by 360 degrees for 10 seconds.
 
         print("Stage start time code ", self.stage.GetStartTimeCode())
         print("USD Earliest Time", math.isnan(Usd.TimeCode.EarliestTime().GetValue()))
@@ -166,10 +177,11 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 print(f"Processing Subject: {subject}, Method: {method}")
 
                 # Replace with your function calls
-                import_asset(self, subject)
+                # import_asset(self, subject)
+                print("subject: ", subject)
                 string_to_function_call(self, method, subject)
         else:
-            print("[WARNING] Something went wrong, could not parse GPT response") # TODO: promote to error status?
+            print("[WARNING] something went wrong, could not parse GPT response") # TODO: promote to error status?
         
         self.timeline.set_end_time(70)
         self.time = 0

@@ -5,12 +5,9 @@ import json
 import requests
 
 
-def test():
-    print("hello")
-
 def get_code_from_gpt(prompt, omniverse_code):
-
-        openai_api_key = "sk-XFbm9kZEDffLd85VzKTAdAqPRV-AOtLJQpeX4Xi_KHT3BlbkFJYW9yCcTjbd0TCLhaWCvU9hYD4r5t6UHuFi_S4gt8wA"# put yout api key here
+        print("here")
+        openai_api_key = "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"# put yout api key here
         if openai_api_key is None:
             raise ValueError("OpenAI API key is not set in environment variables.")
 
@@ -34,20 +31,21 @@ def get_code_from_gpt(prompt, omniverse_code):
                 },
                 {
                     "role": "user",
-                    "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify a sequence of actions to be performed (e.g., zoom, pan). 2. Identify the subject of each action (e.g., battery, screen). 3. Match each identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the list of identified actions, subjects, and corresponding methods in your response all in seperate lines. For the corresponding methods, omit the extension parameter for the camera functions, but keep everything else. Here are some examples:\n Instructions: 'Zoom into an armchair by 5 units for 10 seconds. Zoom out of an armchair by 5 units for 10 seconds' Your Output: 'Actions:\n1. Zoom in\n2. Zoom out\nSubjects:\n1. Armchair\n2. Armchair\nMethods:\n1. camera_zoom_in(zoom_ratio=5, duration=10)\n2. camera_zoom_in(zoom_ratio=5, duration=10)'" # TODO: update for few-shot prompting
+                    "content": f"Please analyze the following instructions: {prompt}. Your task is to: 1. Identify a sequence of actions to be performed (e.g., zoom, pan). 2. Identify the subject of each action (e.g., battery, screen). 3. Match each identified action and subject to the most appropriate method from the following list of methods: {omniverse_code}. Provide the list of identified actions, subjects, and corresponding methods in your response all in seperate lines. For the corresponding methods, omit the extension parameter if it requires it, but keep everything else. If you are given a color in the prompt, break it up ino its corresponding red, green, and blue components scaled between 0 and 1. Make sure to import all assets before use. Here are some examples:\n Instructions: 'Zoom into an armchair by 5 units for 10 seconds. Zoom out of an armchair by 5 units for 10 seconds' Your Output: 'Actions:\n1. Zoom in\n2. Zoom out\nSubjects:\n1. Armchair\n2. Armchair\nMethods:\n1. camera_zoom_in(zoom_ratio=5, duration=10)\n2. camera_zoom_in(zoom_ratio=5, duration=10)'"
                 }
             ]
         }
 
         response = requests.post(url, headers=headers, json=data)
-
+        print("response: ", response.status_code)
+        content = None
         # Check if the request was successful
         if response.status_code == 200:
             content = response.json()['choices'][0]['message']['content']
             print("GPT outputted steps: ", content)
         else:
             print("Error was got.")
-
+        
 
         code_match = re.search(r'```(?:python)?\n([\s\S]*?)```', content)
         code = code_match.group(1) if code_match else content

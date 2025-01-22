@@ -62,7 +62,7 @@ def render_video(viewport_api, output_folder):
     
     # Set the start and end frames based on the existing timeline
     options.start_frame = int(timeline.get_start_time())
-    options.end_frame = 1200 #int(timeline.get_end_time())
+    options.end_frame = 480 #int(timeline.get_end_time())
     print("options.start_frame", options.start_frame)
     print("options.end_frame", options.end_frame)
 
@@ -103,8 +103,8 @@ def render_video(viewport_api, output_folder):
     options.camera = '/perspectivecamera'
 
     # Set up video capture settings
-    options.capture_frames = False
     options.write_frames = False
+    options.capture_frames = True
     options.fps = timeline.get_time_codes_per_seconds() 
 
     print(f"Capture frames: {options.capture_frames}")
