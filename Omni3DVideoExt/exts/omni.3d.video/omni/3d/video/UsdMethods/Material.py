@@ -26,7 +26,6 @@ def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
     mtl_path = Sdf.Path(f"/World/Looks/GenAI_OmniPBR_{mtl_random_name}")
     mtl = UsdShade.Material.Define(stage, mtl_path)
     shader = UsdShade.Shader.Define(stage, mtl_path.AppendPath("Shader"))
-    # shader.CreateImplementationSourceAttr(UsdShade.Tokens.sourceAsset)
     shader.SetSourceAsset("OmniPBR.mdl", "mdl")
     shader.SetSourceAssetSubIdentifier("OmniPBR", "mdl")
     shader.CreateInput("diffuse_color_constant", Sdf.ValueTypeNames.Color3f).Set(diffuse_color)
@@ -37,10 +36,6 @@ def add_material(prim_path: str, diffuse_color: Tuple[float]) -> None:
 
     # bind the material to the prim
     UsdShade.MaterialBindingAPI(stage.GetPrimAtPath(prim_path)).Bind(mtl, UsdShade.Tokens.strongerThanDescendants)
-
-
-
-
 
 def generate_texture(prim_path: str, text: str = "A chubby orange cat riding through space, digital art") -> None:
     """

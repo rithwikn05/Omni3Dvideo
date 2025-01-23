@@ -12,8 +12,6 @@ import math
 
 logger = logging.getLogger(__name__)
 
-from .UsdMethods.Select import *
-
 stage = None
 camera = None
 camera_xformable = None
@@ -50,6 +48,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
         self.time = 0.0 #self.stage.GetStartTimeCode()#.GetValue()
         self.timeline = omni.timeline.get_timeline_interface()
         self.timeline.set_start_time(0.0)
+        
         focal_length_attr = self.camera.GetAttribute("focalLength")
         current_focal_length = focal_length_attr.Get()
         new_focal_length = current_focal_length / 2
@@ -100,22 +99,10 @@ class Omni3dVideoExtension(omni.ext.IExt):
         from .UsdMethods.ReadObjectsToOmni import adding_python_scripts, string_to_function_call
         from .UsdMethods.GPTCalls import get_code_from_gpt
 
-        adding_python_scripts("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt")
+        content = adding_python_scripts()
 
-        with open("C:/OmniUSDResearch/Omni3DVideoExt/exts/omni.3d.video/omni/3d/video/UsdMethods/ParsedCode.txt", 'r') as file:
-            content = file.read() # TODO: You do realize lol, you just wrote this content to the file on the previous line... and now you're immediately reading it back. there was no point in storing it in the file in the first place, just return the string from the grab_python_scripts method. OR, take that string and store it somewhere in memory (either RAM or file system) and use it directly, rather than do all this funny business.
         gpt_output = get_code_from_gpt(self.prompt_field.model.get_value_as_string(), content)
         print("GPT Output: ", gpt_output)
-        
-        # pattern = r'\d+\.\s*(.*?)\s*\(.*?\)\s*.*?Methods:\s*[\s\S]*?\d+\.\s*([a-zA-Z_]+)'
-        # #r'(?:.*\n){1}[^:]*:\s*(.*?)\s*(?:\n|$)(?:.*\n)?[^:]*:\s*(.*?)\s*(?:\n|$)'
-        # subject_pattern = r'Subjects:\s*(?:\d+\.\s*(.*?)(?:\s*\(.*?\))?\s*)+'
-        # method_pattern = r'Methods:\s*(?:\d+\.\s*([a-zA-Z_]+)\(.*?\)\s*)+'
-    
-        # subejct_matches = re.findall(r'\d+\.\s*(.*?)(?:\s*\(.*?\))?', re.search(subject_pattern, gpt_output))
-        # method_matches = re.findall(r'\d+\.\s*([a-zA-Z_]+)\(.*?\)', re.search(method_pattern, gpt_output))
-        # print("subejct_matches: ", subejct_matches)
-        # print("method_matches: ", method_matches)
         
         mode = None
         actions = []
@@ -155,19 +142,12 @@ class Omni3dVideoExtension(omni.ext.IExt):
         #            "prim_roll(rotation_axis = 'Z', prim_path = '/New_Stage/armchair', roll_angle = 360, duration=10)"]
         
         # prompt: Import armchair. Import alarm-clock. Pull into an armchair by 300 units for 4 seconds. Make the alarm clock rotate along by 360 degrees for 4 seconds and start after 0 seconds. Push up from an armchair by 500 units for 4 seconds. Translate the armchair up 500 units for 4 seconds and start after 4 seconds. Place a light called MrLight with intensity of 1000 with color blue pointing at armchair. Place background around armchair with pink.
-
-        # Zoom into an armchair by 5 units for 10 seconds. Place lighting called MrLight with intensity of 1000 pointing at armchair. Place background around armchair.
-        
-        # methods = ["place_lighting(light_name = 'MrLight')", "background()"]
-        #"place_lighting(light_name = 'MrLight')"
-        # Place the soda-can at [x, y, z]. Place the camera at [x, y, z]. Translate a soda-can up 100 units for 10 seconds. Rotate a soda-can by 360 degrees for 10 seconds.
+    
 
         print("Stage start time code ", self.stage.GetStartTimeCode())
         print("USD Earliest Time", math.isnan(Usd.TimeCode.EarliestTime().GetValue()))
 
         if subjects and methods:
-            # print(matches)
-
             print("zip(subjects, methods): ", zip(subjects, methods))
             for match in zip(subjects, methods):
                 print("self.time: ", self.time)
@@ -175,9 +155,7 @@ class Omni3dVideoExtension(omni.ext.IExt):
                 method = match[1].strip()
 
                 print(f"Processing Subject: {subject}, Method: {method}")
-
-                # Replace with your function calls
-                # import_asset(self, subject)
+                
                 print("subject: ", subject)
                 string_to_function_call(self, method, subject)
         else:
