@@ -142,7 +142,8 @@ class Omni3dVideoExtension(omni.ext.IExt):
         #            "prim_roll(rotation_axis = 'Z', prim_path = '/New_Stage/armchair', roll_angle = 360, duration=10)"]
         
         # prompt: Import armchair. Import alarm-clock. Pull into an armchair by 300 units for 4 seconds. Make the alarm clock rotate along by 360 degrees for 4 seconds and start after 0 seconds. Push up from an armchair by 500 units for 4 seconds. Translate the armchair up 500 units for 4 seconds and start after 4 seconds. Place a light called MrLight with intensity of 1000 with color blue pointing at armchair. Place background around armchair with pink.
-    
+
+        #Import armchair. Import alarm-clock. Pull the camera closer by 500 units for 4 seconds, starting after 0 seconds. Use the camera to zoom in by a factor of 1.5 for 3 seconds, starting after 4 seconds. Push the camera upward by 400 units for 5 seconds, starting after 11 seconds.
 
         print("Stage start time code ", self.stage.GetStartTimeCode())
         print("USD Earliest Time", math.isnan(Usd.TimeCode.EarliestTime().GetValue()))

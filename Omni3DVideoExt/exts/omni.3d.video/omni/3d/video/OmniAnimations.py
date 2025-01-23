@@ -130,12 +130,19 @@ class OmniAnimations():
         new_focal_length = current_focal_length * zoom_ratio
 
         print("initial extension.time: ", extension.time)
-        focal_length_attr.Set(value=current_focal_length, time=start if start != None else extension.time)
-        extension.timeline.set_start_time(start if start != None else extension.time) # TODO: wait, I don't think we want to do this yet.
-        if start == None: extension.time += duration * extension.stage.GetFramesPerSecond()
         
-        focal_length_attr.Set(value=new_focal_length, time=start+duration if start != None else extension.time)
-        extension.timeline.set_end_time(extension.time)
+        value_to_use = extension.time * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_to_use = start * extension.stage.GetFramesPerSecond()
+        
+        focal_length_attr.Set(value=current_focal_length, time=value_to_use)
+        extension.timeline.set_start_time(value_to_use) # TODO: wait, I don't think we want to do this yet.
+        value_updated_with_duration = extension.time + duration * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_updated_with_duration = (start + duration) * extension.stage.GetFramesPerSecond()
+        
+        focal_length_attr.Set(value=new_focal_length, time=value_updated_with_duration)
+        extension.timeline.set_end_time(value_updated_with_duration)
         # extension.timeline.play()
         print("final extension.time: ", extension.time)
 
@@ -158,14 +165,21 @@ class OmniAnimations():
         new_focal_length = current_focal_length / zoom_ratio
         
         print("initial extension.time: ", extension.time)
-        focal_length_attr.Set(value=current_focal_length, time=start if start != None else extension.time)
-        extension.timeline.set_start_time(start if start != None else extension.time)
-        if start == None: extension.time += duration * extension.stage.GetFramesPerSecond()
+        value_to_use = extension.time * extension.stage.GetFramesPerSecond()
+        
+        if start != None:
+            value_to_use = start * extension.stage.GetFramesPerSecond()
+            
+        focal_length_attr.Set(value=current_focal_length, time=value_to_use)
+        extension.timeline.set_start_time(value_to_use)
+        value_updated_with_duration = extension.time + duration * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_updated_with_duration = (start + duration) * extension.stage.GetFramesPerSecond()
 
-        focal_length_attr.Set(value=new_focal_length, time=start+duration if start != None else extension.time)
-        extension.timeline.set_end_time(extension.time)
+        focal_length_attr.Set(value=new_focal_length, time=value_updated_with_duration)
+        extension.timeline.set_end_time(value_updated_with_duration)
         # extension.timeline.play()
-        print("final extension.time: ", extension.time)
+        print("final extension.time: ", value_updated_with_duration)
 
     def camera_pan(extension, pan_distance: Gf.Vec2f, duration: float = 3, start: float = None):
         """
@@ -218,12 +232,19 @@ class OmniAnimations():
         current_translation = camera_translation_attr.Get()
         new_translation = current_translation + Gf.Vec3d(0, 0, -pull_distance)
         
-        camera_translation_attr.Set(value=current_translation, time=start if start != None else extension.time)
-        extension.timeline.set_start_time(start if start != None else extension.time)
-        if start == None: extension.time += duration * extension.stage.GetFramesPerSecond()
+        value_to_use = extension.time * extension.stage.GetFramesPerSecond()
+        
+        if start != None:
+            value_to_use = start * extension.stage.GetFramesPerSecond()
+        camera_translation_attr.Set(value=current_translation, time=value_to_use)
+        
+        extension.timeline.set_start_time(value_to_use)
+        value_updated_with_duration = extension.time + duration * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_updated_with_duration = (start + duration) * extension.stage.GetFramesPerSecond()
 
-        camera_translation_attr.Set(value=new_translation, time=start+duration if start != None else extension.time)
-        extension.timeline.set_end_time(extension.time)
+        camera_translation_attr.Set(value=new_translation, time=value_updated_with_duration)
+        extension.timeline.set_end_time(value_updated_with_duration)
 
     def camera_push_out(extension, push_distance: float, duration: float = 3, start: float = None):
         """
@@ -238,12 +259,18 @@ class OmniAnimations():
         current_translation = camera_translation_attr.Get(extension.time)
         new_translation = current_translation + Gf.Vec3d(0, 0, push_distance)
 
-        camera_translation_attr.Set(value=current_translation, time=start if start != None else extension.time)
-        extension.timeline.set_start_time(start if start != None else extension.time)
-        if start == None: extension.time += duration * extension.stage.GetFramesPerSecond()
+        value_to_use = extension.time * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_to_use = start * extension.stage.GetFramesPerSecond()
+        camera_translation_attr.Set(value=current_translation, time=value_to_use)
+        extension.timeline.set_start_time(value_to_use)
+        
+        value_updated_with_duration = extension.time + duration * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_updated_with_duration = (start + duration) * extension.stage.GetFramesPerSecond()
 
-        camera_translation_attr.Set(value=new_translation, time=start+duration if start != None else extension.time)
-        extension.timeline.set_end_time(extension.time)
+        camera_translation_attr.Set(value=new_translation, time=value_updated_with_duration)
+        extension.timeline.set_end_time(value_updated_with_duration)
     
     def camera_push_up(extension, push_distance: float, duration: float = 3, start: float = None):
         """
@@ -258,12 +285,19 @@ class OmniAnimations():
         current_translation = camera_translation_attr.Get(extension.time)
         new_translation = current_translation + Gf.Vec3d(0, push_distance, 0)
 
-        camera_translation_attr.Set(value=current_translation, time=start if start != None else extension.time)
-        extension.timeline.set_start_time(start * extension.stage.GetFramesPerSecond() if start != None else extension.time)
-        if start == None: extension.time += duration * extension.stage.GetFramesPerSecond()
+        value_to_use = extension.time * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_to_use = start * extension.stage.GetFramesPerSecond()
+            
+        camera_translation_attr.Set(value=current_translation, time=value_to_use)
+        extension.timeline.set_start_time(value_to_use)
+        
+        value_updated_with_duration = extension.time + duration * extension.stage.GetFramesPerSecond()
+        if start != None:
+            value_updated_with_duration = (start + duration) * extension.stage.GetFramesPerSecond()
 
-        camera_translation_attr.Set(value=new_translation, time=start+duration if start != None else extension.time)
-        extension.timeline.set_end_time(extension.time)
+        camera_translation_attr.Set(value=new_translation, time=value_updated_with_duration)
+        extension.timeline.set_end_time(value_updated_with_duration)
 
 
 
