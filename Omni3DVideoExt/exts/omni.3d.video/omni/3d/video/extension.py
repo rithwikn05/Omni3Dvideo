@@ -84,11 +84,15 @@ class Omni3dVideoExtension(omni.ext.IExt):
 
    
     def debug2(self):
-        from .UsdMethods.ReadObjectsToOmni import import_asset
-        from .UsdMethods.Material import generate_texture
-        print(self.prompt_field.model.get_value_as_string())
-        import_asset(self.prompt_field.model.get_value_as_string())
-        generate_texture("/New_Stage/army_tank")  
+        # from .UsdMethods.ReadObjectsToOmni import import_asset
+        # from .UsdMethods.Material import generate_texture
+        # print(self.prompt_field.model.get_value_as_string())
+        # import_asset(self.prompt_field.model.get_value_as_string())
+        # generate_texture("/New_Stage/army_tank")
+        # from .UsdMethods.Material import generate_texture, apply_texture_from_file
+
+        from .OmniAnimations import OmniAnimations
+        OmniAnimations.create_camera_look_at(self, "/World/Cube", 15, 10)
 
     def convert(self):
         from .UsdMethods.Material import generate_texture, apply_texture_from_file

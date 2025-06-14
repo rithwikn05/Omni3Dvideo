@@ -16,102 +16,197 @@ class OmniAnimations():
     #               Camera Animation Methods              #
     #######################################################
 
-    # def create_camera_rotate_around_object_animation(stage, camera, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
-    #     """
-    #     Create a camera animation that rotates around an object
-    #     """
-    #     prim = stage.DefinePrim(prim_path, "Cube")
-
-    #     timeline = get_timeline_interface()
-
-    #     translate_op = camera_xformable.AddTranslateOp()
-    #     orient_op = camera_xformable.AddOrientOp()
-
-    #     # angle_in_radians = math.radians(angle) - math.radians(angle) * 2
-
-    #     # matrix: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
-    #     target_prim_xform_mat = UsdGeom.Xformable(prim).GetLocalTransformation()
-    #     translate = target_prim_xform_mat.ExtractTranslation()
-    #     print(translate)
-
-    #     # z_dist = distance * math.cos(angle_in_radians)
-    #     # y_dist = distance * math.sin(angle_in_radians)
-    #     # translation_position = Gf.Vec3f(translate[0], translate[1] - y_dist, translate[2] + z_dist)
-
-    #     frames_per_second = timeline.get_time_codes_per_seconds()
-    #     start_time = timeline.get_start_time()
-    #     end = start_time + (duration * frames_per_second)
-
-    #     # new_translation = translation_position
-    #     up_direction = Gf.Vec3d(0, 1, 0)
-    #     timeline.pause()
-
-    #     for current_time in np.arange(start_time, end, 1/frames_per_second):#int(start_time * frames_per_second), int(end * frames_per_second)):
-    #         rotation_angle_radians = math.radians(angle * ((current_time - start_time) / duration))
-
-    #         new_z_dist = distance * math.cos(rotation_angle_radians)      
-    #         new_y_dist = distance * math.sin(rotation_angle_radians)
-
-    #         new_translation = Gf.Vec3d(translate[0], translate[1] + new_y_dist, translate[2] + new_z_dist)
-    #         print(new_translation)
-    #         # print(up_direction)
-    #         # new_rotation = Gf.Quatf(math.cos(rotation_angle_radians / 2), axis[0] * math.sin(rotation_angle_radians / 2), axis[1] * math.sin(rotation_angle_radians / 2), axis[2] * math.sin(rotation_angle_radians / 2))
-            
-    #         look_at = Gf.Matrix4d(1.0)
-    #         print(look_at)
-    #         look_at = look_at.SetLookAt(new_translation, translate, up_direction)       
-    #         new_rotation = look_at.ExtractRotation().GetQuat()
-    #         new_rotation = Gf.Quatf(new_rotation)
-
-    #         timeline.set_current_time(current_time)
-
-    #         translate_op.Set(new_translation)
-    #         orient_op.Set(new_rotation)
-            
-    #     timeline.set_auto_update(True)
-    #     timeline.set_start_time(start_time)
-    #     timeline.set_end_time(end)
+    def create_camera_rotate_around_object_animation(extension, prim_path: str, duration: float, angle: float = 45, distance: float = 200) -> None:
+        """
+        Create a camera animation that rotates around an object
+        """
+        pass
     
     
-    def create_camera_look_at(look_at_prim_path: str, angle: float = 30, distance: float = 50)  -> None:
+    def create_camera_look_at(extension, prim_path: str, duration: float = 3, start: float = None)  -> None:
         """
         Create a camera at a position and make it look at a point
-
-        Args:
-            prim_path (str): the path of the object to look at
-            angle (float): the angle of the camera 
-            distance (float): the distance of the camera
         """
+        
+        def vectors_to_quaternion(x_vec, y_vec, z_vec):
+            """
+            Convert three orthogonal basis vectors to a quaternion using USD's Gf types.
+            
+            Args:
+                x_vec (Gf.Vec3d): X basis vector
+                y_vec (Gf.Vec3d): Y basis vector
+                z_vec (Gf.Vec3d): Z basis vector
+                
+            Returns:
+                Gf.Quatd: Quaternion representing the orientation
+            """
+            # Create rotation matrix
+            m00, m01, m02 = x_vec[0], x_vec[1], x_vec[2]
+            m10, m11, m12 = y_vec[0], y_vec[1], y_vec[2]
+            m20, m21, m22 = z_vec[0], z_vec[1], z_vec[2]
+            
+            # Calculate quaternion components using the rotation matrix
+            tr = m00 + m11 + m22
+            
+            if tr > 0:
+                S = np.sqrt(tr + 1.0) * 2
+                w = 0.25 * S
+                x = (m21 - m12) / S
+                y = (m02 - m20) / S
+                z = (m10 - m01) / S
+            elif m00 > m11 and m00 > m22:
+                S = np.sqrt(1.0 + m00 - m11 - m22) * 2
+                w = (m21 - m12) / S
+                x = 0.25 * S
+                y = (m01 + m10) / S
+                z = (m02 + m20) / S
+            elif m11 > m22:
+                S = np.sqrt(1.0 + m11 - m00 - m22) * 2
+                w = (m02 - m20) / S
+                x = (m01 + m10) / S
+                y = 0.25 * S
+                z = (m12 + m21) / S
+            else:
+                S = np.sqrt(1.0 + m22 - m00 - m11) * 2
+                w = (m10 - m01) / S
+                x = (m02 + m20) / S
+                y = (m12 + m21) / S
+                z = 0.25 * S
+
+            return Gf.Quatd(w, x, y, z)
+        
+        # Get the USD stage
         stage = omni.usd.get_context().get_stage()
-        stage.DefinePrim(look_at_prim_path, "Cube")
-        cameraPrim = stage.DefinePrim("/camera", "Camera")
 
-        axis = Gf.Vec3d(1, 0, 0).GetNormalized()
+        # Retrieve the source and target prims
+        source_prim = extension.stage.GetPrimAtPath(extension.camera_path)
+        target_prim = extension.stage.GetPrimAtPath(prim_path)
 
-        angle_in_radians = math.radians(angle) - math.radians(angle) * 2
+        if not source_prim or not target_prim:
+            print('ugh, check create_camera_look_at function, something went wrong')
 
-        #Getting prims location matrix
-        prim = stage.GetPrimAtPath(look_at_prim_path)
-        matrix: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
-        translate: Gf.Vec3d = matrix.ExtractTranslation()
+        # Get the world positions of the source and target prims
+        source_xform = UsdGeom.Xformable(source_prim).ComputeLocalToWorldTransform(0)
+        target_xform = UsdGeom.Xformable(target_prim).ComputeLocalToWorldTransform(0)
 
-        camera_xformable = UsdGeom.Xformable(cameraPrim)
-        camera_xformable.ClearXformOpOrder()
+        source_pos = Gf.Vec3d(source_xform.ExtractTranslation())
+        target_pos = Gf.Vec3d(target_xform.ExtractTranslation())
+        print("target_pos: ", target_pos)
 
-        #Finding z and y distance translations relative to the prim
-        z_dist = distance * math.cos(angle_in_radians)
-        y_dist = distance * math.sin(angle_in_radians)
-        translation_position = Gf.Vec3f(translate[0], translate[1] - y_dist, translate[2] + z_dist)
+        # Calculate the direction vector from source to target
+        direction = target_pos - source_pos
+        direction = direction / direction.GetLength()
 
-        #Finding the quaternion for the camera angle
-        camera_angle = Gf.Quatf(math.cos(angle_in_radians / 2), axis[0] * math.sin(angle_in_radians / 2), axis[1] * math.sin(angle_in_radians / 2), axis[2] * math.sin(angle_in_radians / 2))
+        # Calculate the rotation needed for the source to look at the target
+        up = Gf.Vec3d(0, 0, -1)
+        right = Gf.Vec3d(1, 0, 0)
+        forward = Gf.Vec3d(0, -1, 0) # Gf.Cross(forward, right)
+        rotation_axis = Gf.Cross(forward, direction)
+        print("forward: ", forward)
+        print("direction: ", direction)
+        
+        # project source and target into yz-plane
+        # x_proj_dir = Gf.Vec3d(0, direction[1], direction[2])
+        # x_proj_for = Gf.Vec3d(0, forward[1], forward[2])
+        # x_rot = 0
+        # if x_proj_dir != Gf.Vec3d(0,0,0):
+        #     x_proj_dir = x_proj_dir / x_proj_dir.GetLength()
+        #     x_proj_for = x_proj_for / x_proj_for.GetLength()
+        #     x_rot = math.degrees(math.acos(x_proj_for[1]) - math.acos(x_proj_dir[1]))
+        
+        # project source and target into zx-plane2
+        y_proj_dir = Gf.Vec3d(direction[0], 0, direction[2])
+        y_proj_for = Gf.Vec3d(forward[0], 0, forward[2])
+        y_rot = 0
+        if y_proj_dir != Gf.Vec3d(0,0,0):
+            y_proj_dir = y_proj_dir / y_proj_dir.GetLength()
+            y_proj_for = y_proj_for / y_proj_for.GetLength()
+            y_rot = math.degrees(math.acos(y_proj_for[2]) - math.acos(y_proj_dir[2]))
+        
+        # project source and target into xy-plane
+        # z_proj_dir = Gf.Vec3d(direction[0], direction[1], 0)
+        # z_proj_for = Gf.Vec3d(forward[0], forward[1], 0)
+        # z_rot = 0
+        # if z_proj_dir != Gf.Vec3d(0,0,0):
+        #     z_proj_dir = z_proj_dir / z_proj_dir.GetLength()
+        #     z_proj_for = z_proj_for / z_proj_for.GetLength()
+        #     z_rot = math.degrees(math.acos(z_proj_for[0]) - math.acos(z_proj_dir[0]))
+        
+        
+        
+        original = vectors_to_quaternion(forward, right, up)
+        temp = direction - forward
+        rtemp = Gf.Vec3d(-temp[2], 0, temp[0])
+        rtemp = rtemp / rtemp.GetLength()
+        print(temp)
+        print(rtemp)
+        quatd = vectors_to_quaternion(temp, rtemp, Gf.Cross(temp, rtemp))
 
-        #Setting camera translation
-        camera_xformable.AddTranslateOp().Set(translation_position)
+        # Handle edge cases
+        # if rotation_axis.GetLength() == 0:
+        #     rotation_axis = Gf.Vec3d(0, 1, 0)  # Default to Y axis if aligned
 
-        #Setting camera angle
-        camera_xformable.AddOrientOp().Set(camera_angle)
-        return camera_xformable, cameraPrim
+        # Add keyframes for position and rotation at the start time
+        xform_api = UsdGeom.Xformable(source_prim)
+        
+        axis = Gf.Cross(forward, direction)
+        angle_in_radians = math.acos(Gf.Dot(forward, direction))
+        
+        # #Finding the quaternion for the camera angle
+        camera_angle = Gf.Quatd(math.cos(angle_in_radians / 2), axis[0] * math.sin(angle_in_radians / 2), axis[1] * math.sin(angle_in_radians / 2), axis[2] * math.sin(angle_in_radians / 2))
+        xform_api.ClearXformOpOrder()
+
+        
+        existing_ops = xform_api.GetOrderedXformOps()
+
+        # Rotation keyframe at start time
+        rotation_attr = None
+        for op in existing_ops:
+            if op.GetOpType() == UsdGeom.XformOp.TypeOrient:
+                rotation_attr = op
+                break
+
+        # If the translate op doesn't exist, add it
+        if rotation_attr is None:
+            rotation_attr = xform_api.AddXformOp(UsdGeom.XformOp.TypeOrient, UsdGeom.XformOp.PrecisionDouble)
+        
+        print("rotation_attr: ", rotation_attr)
+        rotation_attr.Set(value=original, time=start)
+
+        # Add keyframes for position and rotation at the end time (look-at position)
+        # position_attr.Set(value=target_pos, time=(start+duration))
+        rotation_attr.Set(value=camera_angle, time=(start+duration))
+        
+        # stage = omni.usd.get_context().get_stage()
+        # stage.DefinePrim(look_at_prim_path, "Cube")
+        # cameraPrim = stage.DefinePrim("/camera", "Camera")
+
+        # axis = Gf.Vec3d(1, 0, 0).GetNormalized()
+
+        # angle_in_radians = math.radians(angle) - math.radians(angle) * 2
+
+        # #Getting prims location matrix
+        # prim = stage.GetPrimAtPath(look_at_prim_path)
+        # matrix: Gf.Matrix4d = omni.usd.get_world_transform_matrix(prim)
+        # translate: Gf.Vec3d = matrix.ExtractTranslation()
+
+        # camera_xformable = UsdGeom.Xformable(cameraPrim)
+        # camera_xformable.ClearXformOpOrder()
+
+        # #Finding z and y distance translations relative to the prim
+        # z_dist = distance * math.cos(angle_in_radians)
+        # y_dist = distance * math.sin(angle_in_radians)
+        # translation_position = Gf.Vec3f(translate[0], translate[1] - y_dist, translate[2] + z_dist)
+
+        # #Finding the quaternion for the camera angle
+        # camera_angle = Gf.Quatf(math.cos(angle_in_radians / 2), axis[0] * math.sin(angle_in_radians / 2), axis[1] * math.sin(angle_in_radians / 2), axis[2] * math.sin(angle_in_radians / 2))
+
+        # #Setting camera translation
+        # camera_xformable.AddTranslateOp().Set(translation_position)
+
+        # #Setting camera angle
+        # camera_xformable.AddOrientOp().Set(camera_angle)
+        # return camera_xformable, cameraPrim
 
     def camera_zoom_in(extension, zoom_ratio: float = 2.0, duration: float = 3, start: float = None):
         """
@@ -748,9 +843,9 @@ class OmniAnimations():
             assert references[0] == Sdf.Reference(assetPath=local_path)
                 
                 
-        aws_access_id = "AKIA4HMIAHI53YO5JHJG"
-        aws_secret_access_id = "gDjGAN+Y9XiOiEpTRJyscym1MDYeT1D/6rWW5uy+"
-        region_name = "us-west-1"
+        aws_access_id = 
+        aws_secret_access_id = 
+        region_name = 
 
         s3 = boto3.client('s3', 
                     aws_access_key_id=aws_access_id,
